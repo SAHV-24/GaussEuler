@@ -82,7 +82,7 @@ CREATE TABLE Pago (
 			idPago INT NOT NULL AUTO_INCREMENT,
 			idSolicitud INT NOT NULL,
                         estadoDePago ENUM('Pagado','Por Pagar') NOT NULL DEFAULT 'Por Pagar',
-                        fechaInicio DATE NOT NULL DEFAULT CURRENT_DATE(),
+                        fechaInicio DATE NOT NULL DEFAULT,
                         fechaLimite DATE NOT NULL,
                         monto DECIMAL(12,2) NOT NULL,
                         
