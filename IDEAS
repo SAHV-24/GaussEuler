@@ -1,13 +1,13 @@
-Agregar un trigger que si se pasa de la fecha LIMITE del PAGO, entonces cambiar el estado de la SOLICITUD a 'cancelado'.
+[DONE] Agregar un trigger que si se pasa de la fecha LIMITE del PAGO, entonces cambiar el estado de la SOLICITUD a 'cancelado'.
 
-Agregar un trigger ANTES DE INSERTAR en comentario que verifique si el estado en Solicitud es 'Cerrado'
+[] Agregar un trigger ANTES DE INSERTAR en comentario que verifique si el estado en Solicitud es 'Cerrado'
 
-Agregar un trigger que VERIFIQUE si se va a insertar un RECIBODEPAGO que está ACTIVO .
+[] Agregar un trigger que VERIFIQUE si se va a insertar un RECIBODEPAGO que está ACTIVO .
 
-Agregar un procedimiento almacenado que actualice el estado de un determinado documento en DOCUMENTO.
-Ejemplo: Actualizar el estado de un DOCUMENTO SOLICITADO de 'Activo' a 'Inactivo'
-(podría agregar una operación ~ )
+[] Agregar un procedimiento almacenado que actualice el estado de un determinado documento en DOCUMENTO.
+          Ejemplo: Actualizar el estado de un DOCUMENTO SOLICITADO de 'Activo' a 'Inactivo'
+          (podría agregar una operación ~ )
 
-Agregar un procedimiento almacenado que busque el RECIBO DE PAGO que está ACTIVO de la solicitud.
+[] Agregar un procedimiento almacenado que busque el RECIBO DE PAGO que está ACTIVO de la solicitud.
 
-
+[] Agregar un procedimiento que cambie el estado de la solicitud a 'en proceso'
