@@ -1,0 +1,2 @@
+  Agregar un trigger que si se pasa de la fecha LIMITE del PAGO, entonces cambiar el estado de la SOLICITUD a 'cancelado'.
+  
