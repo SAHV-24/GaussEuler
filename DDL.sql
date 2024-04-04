@@ -70,7 +70,7 @@ CREATE TABLE Documento (
                         tipoDocumento ENUM('ReciboDePago','Operacion','Solicitado') NOT NULL,
                         tituloDocumento VARCHAR(50) NOT NULL,
                         linkDocumento VARCHAR(100) NOT NULL,
-			estadoDocumento ENUM('activo','inactivo') NOT NULL
+			estadoDocumento ENUM('activo','inactivo') NOT NULL,
 
 	
                         PRIMARY KEY(idDocumento),
