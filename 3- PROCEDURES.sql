@@ -33,12 +33,23 @@ CREATE PROCEDURE n ()
 SELECT * FROM normativa;
 // DELIMITER ; 
 
+DROP PROCEDURE IF EXISTS p;
+DELIMITER // 
+CREATE PROCEDURE p()
+SELECT * FROM pago;
+// DELIMITER ; 
+
+DROP PROCEDURE IF EXISTS d;
+DELIMITER // 
+CREATE PROCEDURE d ()
+SELECT * FROM documento;
+// DELIMITER ; 
 
 -- Seleccionar por ID de la solicitud
-DROP procedure if exists estadodepago;
+DROP procedure if exists estadoDePago;
 DELIMITER && 
-CREATE PROCEDURE estadoDePagO (in elID INT)
-BEGIN
-SELECT elId, idSolicitud, estadoDePago FROM pago WHERE idSolicitud=elID;
-END;
+	CREATE PROCEDURE estadoDePago (in elID INT)
+	BEGIN
+	SELECT elId, idSolicitud, estadoDePago FROM pago WHERE idSolicitud=elID;
+	END;
 && DELIMITER ;
