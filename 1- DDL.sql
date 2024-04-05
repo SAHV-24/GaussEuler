@@ -4,17 +4,17 @@ USE proyecto;
 -- Normativa
 CREATE TABLE Normativa (
 			idNormativa int NOT NULL AUTO_INCREMENT,
-			linkPlantilla varchar(100) NOT NULL,
-			descripcionNormativa varchar(250) NOT NULL,
+			linkPlantilla TEXT NOT NULL,
+			descripcionNormativa MEDIUMTEXT NOT NULL,
 			fecha DATETIME NOT NULL DEFAULT NOW(),
 			PRIMARY KEY (idNormativa)
 			);
 -- Unidad
 CREATE TABLE Unidad (
 			  idUnidad int NOT NULL AUTO_INCREMENT,
-			  nombreUnidad varchar(50) NOT NULL,
+			  nombreUnidad varchar(100) NOT NULL,
 			  extension int NOT NULL,
-			  correo varchar(50) NOT NULL,
+			  correo varchar(100) NOT NULL,
 	
 			  PRIMARY KEY (idUnidad)
                       );
@@ -24,8 +24,8 @@ CREATE TABLE `tramite` (
 			`idTramite` int NOT NULL AUTO_INCREMENT,
 			`idUnidad` int NOT NULL,
 			`idNormativa` int NOT NULL,
-			`nombre` varchar(50) NOT NULL,
-			`descripcion` varchar(250) NOT NULL,
+			`nombre` varchar(200) NOT NULL,
+			`descripcion` TEXT NOT NULL,
 			`costo` decimal(12,2) DEFAULT NULL,
 			PRIMARY KEY (`idTramite`),
 			KEY `idUnidad` (`idUnidad`),
@@ -39,9 +39,9 @@ CREATE TABLE Usuario 	(
 			idUsuario INT NOT NULL AUTO_INCREMENT,
 			identificacion INT NOT NULL,
 			tipo ENUM('Administrativo','Estudiante','Docente','Empleado') NOT NULL,
-			nombre VARCHAR(50) NOT NULL,
-			apellido VARCHAR(50) NOT NULL,
-			correoElectronico VARCHAR(50) NOT NULL,
+			nombre VARCHAR(100) NOT NULL,
+			apellido VARCHAR(100) NOT NULL,
+			correoElectronico VARCHAR(200) NOT NULL,
 			telefono INT NOT NULL,
 			
 			PRIMARY KEY(idUsuario),
@@ -68,8 +68,8 @@ CREATE TABLE Documento (
 			idDocumento INT NOT NULL AUTO_INCREMENT,
 			idSolicitud INT NOT NULL,
                         tipoDocumento ENUM('ReciboDePago','Operacion','Solicitado') NOT NULL,
-                        tituloDocumento VARCHAR(50) NOT NULL,
-                        linkDocumento VARCHAR(100) NOT NULL,
+                        tituloDocumento VARCHAR(100) NOT NULL,
+                        linkDocumento TEXT NOT NULL,
 			estadoDocumento ENUM('activo','inactivo') NOT NULL,
 
 	
@@ -96,7 +96,7 @@ CREATE TABLE Comentario(
 			idSolicitud INT NOT NULL,
 			idUsuario INT NOT NULL,
 			comentarioAnterior INT NULL,
-			mensaje VARCHAR(255) NOT NULL,
+			mensaje MEDIUMTEXT NOT NULL,
 			fechaYhora DATETIME NOT NULL DEFAULT NOW(),
 			
 			PRIMARY KEY(idComentario),
