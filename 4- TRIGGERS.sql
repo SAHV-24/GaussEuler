@@ -122,3 +122,20 @@ DROP TRIGGER IF EXISTS update_estado_limite_fecha;
 	END
 	// DELIMITER ; 
 
+
+-- TRIGGER que NO permite que se agreguen más comentarios luego de que se cerró la solicitud.
+
+DROP TRIGGER IF EXISTS estadoSolicitud_en_comentario;
+
+DELIMITER &&
+	CREATE TRIGGER estadoSolicitud_en_comentario BEFORE INSERT ON comentario
+	FOR EACH ROW
+	BEGIN
+		DECLARE laId INT;
+		SET laId = New.idSolicitud;
+		IF getEstadoSolicitud(laId)='cerrado' THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='ERROR, LA SOLICITUD ESTÁ CERRADA';
+		END IF;
+	END
+&& DELIMITER ;
+
