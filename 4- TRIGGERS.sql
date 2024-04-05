@@ -139,3 +139,23 @@ DELIMITER &&
 	END
 && DELIMITER ;
 
+-- TRIGGER QUE VERIFICA SI YA EXISTE UN DOCUMENTO DE RECIBO DE PAGO ACTIVO.
+DROP TRIGGER IF EXISTS verificar_reciboDePago;
+DELIMITER &&
+
+	CREATE TRIGGER verificar_reciboDePago BEFORE INSERT ON documento
+	FOR EACH ROW
+
+	BEGIN
+		DECLARE laID INT;
+        DECLARE cant INT;
+		SET laId = NEW.idSOLICITUD;
+                
+        SET cant = (
+SELECT COUNT(*) FROM documento WHERE idSolicitud=2 and ESTADOdocumento='Activo' and tipoDocumento='ReciboDePago');
+
+		IF new.tipoDocumento ='reciboDePago' AND cant=1 THEN
+				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='ERROR, YA EXISTE UN RECIBO DE PAGO ACTIVO, DEBE DESACTIVARLO ANTES DE INSERTAR UN RECIBO DE PAGO';
+		END IF;
+	END
+
