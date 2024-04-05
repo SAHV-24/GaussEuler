@@ -7,6 +7,7 @@ CREATE TABLE Normativa (
 			linkPlantilla TEXT NOT NULL,
 			descripcionNormativa MEDIUMTEXT NOT NULL,
 			fecha DATETIME NOT NULL DEFAULT NOW(),
+			esVigente BOOLEAN NOT NULL,
 			PRIMARY KEY (idNormativa)
 			);
 -- Unidad
