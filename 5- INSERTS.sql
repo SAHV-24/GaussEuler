@@ -1,6 +1,6 @@
 -- Inserts para Normativa
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa) VALUES ('enlace_plantilla_1', 'Descripción de la Normativa 1');
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa) VALUES ('enlace_plantilla_2', 'Descripción de la Normativa 2');
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('enlace_plantilla_1', 'Descripción de la Normativa 1', TRUE);
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('enlace_plantilla_2', 'Descripción de la Normativa 2', TRUE);
 
 -- Inserts para Unidad
 INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 1', 1234, 'unidad1@ejemplo.com');
@@ -16,8 +16,8 @@ INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, 
 
 -- Inserts para Solicitud
 -- Suponiendo que los ids de Usuario y Tramite existen y son 1 y 1 respectivamente
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite, estado, fechaInicio) VALUES (1, 2, 1, 'pendiente', NOW());
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite, estado, fechaInicio) VALUES (2, 1, 2, 'pendiente', NOW());
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite, estado) VALUES (1, 2, 1, 'pendiente');
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite, estado) VALUES (2, 1, 2, 'pendiente');
 
 -- Inserts para Documento
 -- Suponiendo que los ids de Solicitud son 1 y 2 respectivamente
@@ -31,5 +31,5 @@ INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VA
 
 -- Inserts para Comentario
 -- Suponiendo que los ids de Solicitud y Usuario son 1 y 1 respectivamente
-INSERT INTO Comentario (idSolicitud, idUsuario, comentarioAnterior, mensaje, fechaYhora) VALUES (1, 1, NULL, 'Primer comentario en la solicitud 1', NOW());
-INSERT INTO Comentario (idSolicitud, idUsuario, comentarioAnterior, mensaje, fechaYhora) VALUES (2, 2, NULL, 'Primer comentario en la solicitud 2', NOW());
+INSERT INTO Comentario (idSolicitud, idUsuario, comentarioAnterior, mensaje) VALUES (1, 1, NULL, 'Primer comentario en la solicitud 1');
+INSERT INTO Comentario (idSolicitud, idUsuario, comentarioAnterior, mensaje) VALUES (2, 2, NULL, 'Primer comentario en la solicitud 2');
