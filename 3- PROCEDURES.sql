@@ -54,3 +54,23 @@ DELIMITER //
 	SELECT elId, idSolicitud, estadoDePago FROM pago WHERE idSolicitud=elID;
 	END;
 // DELIMITER ;                                      
+
+-- Cambiar el estado de un determinado Documento:
+DROP PROCEDURE IF EXISTS cambiarEstadoDocumento;
+
+DELIMITER // 
+CREATE PROCEDURE cambiarEstadoDocumento(IN idDoc INT) 
+BEGIN
+	DECLARE elEstado VARCHAR(50);
+    SELECT estadoDocumento INTO elEstado FROM documento WHERE idDocumento=idDoc;
+    
+    IF elEstado='activo' THEN
+		SET elEstado='inactivo';
+	ELSE
+		SET elEstado='activo';
+	END IF;    
+    
+    UPDATE documento SET estadoDocumento = elEstado WHERE idDocumento=idDoc;
+	SELECT CONCAT('Nuevo Estado: ',elEstado,'. Documento con ID: ',idDoc) AS 'Nuevo Mensaje';
+END
+// DELIMITER ;
