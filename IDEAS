@@ -4,7 +4,7 @@
 
 [DONE] Agregar un trigger que VERIFIQUE si se va a insertar un RECIBODEPAGO que está ACTIVO .
 
-[] Agregar un procedimiento almacenado que actualice el estado de un determinado documento en DOCUMENTO.
+[DONE] Agregar un procedimiento almacenado que actualice el estado de un determinado documento en DOCUMENTO.
           Ejemplo: Actualizar el estado de un DOCUMENTO SOLICITADO de 'Activo' a 'Inactivo'
           (podría agregar una operación ~ )
 
