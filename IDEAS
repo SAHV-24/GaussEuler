@@ -13,3 +13,5 @@
 [] Agregar un procedimiento que cambie el estado de la solicitud a 'en proceso'
 
 [] Agregar una tabla que sea cancelaciones para saber cuándo fue CANCELADA alguna solicitud en específico (Un tipo de auditoría de BD).
+
+[] Agregar un trigger que no permita crear una solicitud en el que el usuario y el funcionario sea el mismo.
