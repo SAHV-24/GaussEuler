@@ -162,3 +162,18 @@ SELECT COUNT(*) FROM documento WHERE idSolicitud= laID and ESTADOdocumento='Acti
 END //
 
 DELIMITER ;
+
+-- TRIGGER QUE VERIFICA SI EL idUsuario y el idFuncionario son IGUALES.
+
+DROP TRIGGER IF EXISTS verificarUsuarioYFuncionario;
+
+DELIMITER // 
+CREATE TRIGGER verificarUsuarioYFuncionario BEFORE INSERT ON solicitud
+FOR EACH ROW
+BEGIN
+	IF new.idUsuario=new.idFuncionario THEN 
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: NO PUEDE INGRESARSE UN MISMO USUARIO Y FUNCIONARIO';
+	END IF;
+END;
+// DELIMITER ;  
+
