@@ -1,5 +1,33 @@
 -- Triggers en solicitud
 
+-- TRIGGERS QUE HACE QUE EXISTA LA RELACIÓN 1 A 1 EN LA TABLA USUARIO Y PAGO
+
+
+DROP TRIGGER IF EXISTS relacionUnoAUnoPagoINS;
+
+DELIMITER // 
+CREATE TRIGGER relacionUnoAUnoPagoINS BEFORE INSERT ON pago
+FOR EACH ROW
+BEGIN
+	IF NEW.idSolicitud IN (SELECT idSolicitud FROM pago) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede insertar un nuevo pago puesto que ya existe un Pago Activo para esta Solicitud';
+	END IF;
+END
+// DELIMITER ; 
+
+DROP TRIGGER IF EXISTS relacionUnoAUnoPagoUPD;
+
+DELIMITER // 
+CREATE TRIGGER relacionUnoAUnoPagoUPD BEFORE UPDATE ON pago
+FOR EACH ROW
+BEGIN
+	IF NEW.idSolicitud IN (SELECT idSolicitud FROM pago) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede insertar un nuevo pago puesto que ya existe un Pago Activo para esta Solicitud';
+	END IF;
+END
+// DELIMITER ; 
+
+
 -- Apenas se inserte un nuevo funcionario, verificará si este es de tipo 'Administrador' en la tabla Usuario
 DROP TRIGGER IF EXISTS verificar_funcionario_administrador_insert;
 
