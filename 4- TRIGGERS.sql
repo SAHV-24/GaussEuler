@@ -72,32 +72,33 @@ DELIMITER ;
 
 -- TRIGGERS PARA CAMBIAR EL MONTO DEL PAGO DE DE UN DOCUMENTO 'TRAMITADO'
 
+
 DROP trigger IF EXISTS INSERT_MONTO_SDOC_SOLICITADO;
 	
 DELIMITER //
-CREATE TRIGGER INSERT_MONTO_SDOC_SOLICITADO  before INSERT ON pago
+CREATE TRIGGER INSERT_MONTO_SDOC_SOLICITADO BEFORE INSERT ON pago
 FOR EACH ROW 
 BEGIN
-	declare id INT;
-    set id = NEW.idSolicitud;
+	DECLARE id INT;
+    SET id = NEW.idSolicitud;
     
-	SET new.MONTO = (SELECT costo FROM tramite join solicitud using(idtramite) where idSolicitud = id);
-    
-END	//
-DELIMITER ; 
-    
-    
+    SET NEW.monto=(SELECT costo FROM tramite JOIN solicitud USING(idTramite) WHERE idSolicitud=id);
+END //
+DELIMITER ;
+
+
 DROP TRIGGER IF EXISTS UPDATE_MONTO_SDOC_SOLICITADO;
+
 DELIMITER //
 CREATE TRIGGER UPDATE_MONTO_SDOC_SOLICITADO BEFORE UPDATE ON pago
 FOR EACH ROW 
-	BEGIN
-		declare id INT;
-		SET id=NEW.idSolicitud; 
-	
-		SET new.MONTO=(SELECT costo FROM tramite join solicitud using(idtramite)where idSolicitud = id);
-	END //
-DELIMITER ; 
+BEGIN
+	DECLARE id INT;
+    SET id = NEW.idSolicitud;
+    
+    SET NEW.monto=(SELECT costo FROM tramite JOIN solicitud USING(idTramite) WHERE idSolicitud=id);
+END //
+DELIMITER ;
 
 
 -- TRIGGERS PARA QUE CUANDO SE INSERTE EL DOCUMENTO SOLICITADO CAMBIE EL ESTADO DE LA SOLICITUD.
