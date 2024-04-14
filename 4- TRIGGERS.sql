@@ -82,7 +82,12 @@ BEGIN
 	DECLARE id INT;
     SET id = NEW.idSolicitud;
     
-    SET NEW.monto=(SELECT costo FROM tramite JOIN solicitud USING(idTramite) WHERE idSolicitud=id);
+    IF id IN(SELECT idSolicitud FROM solicitud) THEN 
+		SET NEW.monto=(SELECT costo FROM tramite JOIN solicitud USING(idTramite) WHERE idSolicitud=id);
+	else
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La solicitud no existe';
+    END IF;
+    
 END //
 DELIMITER ;
 

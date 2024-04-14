@@ -44,7 +44,7 @@ CREATE TABLE Usuario 	(
 			nombre VARCHAR(100) NOT NULL,
 			apellido VARCHAR(100) NOT NULL,
 			correoElectronico VARCHAR(200) NOT NULL,
-			telefono INT NOT NULL,
+			telefono BIGINT NOT NULL,
 			
 			PRIMARY KEY(idUsuario),
 			UNIQUE(identificacion,tipo)
@@ -193,7 +193,12 @@ BEGIN
 	DECLARE id INT;
     SET id = NEW.idSolicitud;
     
-    SET NEW.monto=(SELECT costo FROM tramite JOIN solicitud USING(idTramite) WHERE idSolicitud=id);
+    IF id IN(SELECT idSolicitud FROM solicitud) THEN 
+		SET NEW.monto=(SELECT costo FROM tramite JOIN solicitud USING(idTramite) WHERE idSolicitud=id);
+	else
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La solicitud no existe';
+    END IF;
+    
 END //
 DELIMITER ;
 
@@ -426,3 +431,53 @@ BEGIN
 -- 																									INSERTS          
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+-- Inserts para la tabla Normativa
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link1.com', 'Descripción normativa 1', 1);
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link2.com', 'Descripción normativa 2', 0);
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link3.com', 'Descripción normativa 3', 1);
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link4.com', 'Descripción normativa 4', 0);
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link5.com', 'Descripción normativa 5', 1);
+
+-- Inserts para la tabla Unidad
+INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 1', 1234, 'unidad1@example.com');
+INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 2', 5678, 'unidad2@example.com');
+INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 3', 9012, 'unidad3@example.com');
+INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 4', 3456, 'unidad4@example.com');
+INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 5', 7890, 'unidad5@example.com');
+
+-- Inserts para la tabla Tramite
+INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (1, 1, 'Trámite 1', 'Descripción trámite 1', 50.00);
+INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (2, 2, 'Trámite 2', 'Descripción trámite 2', 75.00);
+INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (3, 3, 'Trámite 3', 'Descripción trámite 3', 100.00);
+INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (4, 4, 'Trámite 4', 'Descripción trámite 4', 125.00);
+INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (5, 5, 'Trámite 5', 'Descripción trámite 5', 150.00);
+
+-- Inserts para la tabla Usuario
+INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (123456789, 'Administrativo', 'Juan', 'Pérez', 'juanperez@example.com', 1234567890);
+INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (987654321, 'Estudiante', 'María', 'González', 'mariagonzalez@example.com', 9876543210);
+INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (456789123, 'Docente', 'Luis', 'Martínez', 'luismartinez@example.com', 4567891230);
+INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (321654987, 'Empleado', 'Ana', 'Sánchez', 'anasanchez@example.com', 3216549870);
+INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (654321987, 'Administrativo', 'Pedro', 'López', 'pedrolopez@example.com', 6543219870);
+
+-- Inserts para la tabla Solicitud
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (1, 2, 1);
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (2, 3, 2);
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (3, 4, 3);
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (4, 5, 4);
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (5, 1, 5);
+
+-- Inserts para la tabla Documento
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (1, 'ReciboDePago', 'Recibo de Pago 1', 'http://documento1.com', 'activo');
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (2, 'Operacion', 'Operación 2', 'http://documento2.com', 'inactivo');
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (3, 'Solicitado', 'Documento Solicitado 3', 'http://documento3.com', 'activo');
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (4, 'Operacion', 'Operación 4', 'http://documento4.com', 'activo');
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (5, 'ReciboDePago', 'Recibo de Pago 5', 'http://documento5.com', 'inactivo');
+
+-- Inserts para la tabla Pago
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (1, 'Pagado', '2024-04-13', '2024-05-13', 50.00);
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (2, 'Por Pagar', '2024-04-13', '2024-05-13', 75.00);
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (3, 'Pagado', '2024-04-13', '2024-05-13', 100.00);
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (4, 'Por Pagar', '2024-04-13', '2024-05-13', 125.00);
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (5, 'Pagado', '2024-04-13', '2024-05-13', 150.00);
+
+--
