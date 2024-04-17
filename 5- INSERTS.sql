@@ -229,7 +229,6 @@ VALUES
 
 -- DESCOMENTAR PARA ACTUALIZAR LOS IDS IMPARES
 UPDATE solicitud set estado='en proceso' where idSolicitud%2=0;
-CALL P;
 INSERT INTO PAGO(idSolicitud,fechaInicio,fechalimite) VALUES
 (2,current_date(),current_date()+1),(4,current_date(),current_date()+1),
 (6,current_date(),current_date()+1) , (8,current_date(),current_date()+1),
@@ -239,12 +238,12 @@ INSERT INTO PAGO(idSolicitud,fechaInicio,fechalimite) VALUES
 -- PROBAR QUE PASA SI SE EJECUTA 
  -- INSERT INTO PAGO(idSolicitud,fechaInicio,fechaLimite) VALUES(1,current_date(),current_date()+1);
 
-INSERT INTO comentario (idSolicitud,idUsuario,mensaje,comentarioAnterior)
-VALUES (3,3,'Hola',NULL),
-(3,4,'Hola Usuario, cómo estás???',1),
-(3,4,'Necesito tu cédula por favor',2),
-(3,3,'Bien y tú?',1),
-(3,3,'http://lacedula.com',4),
+INSERT INTO comentario (idComentario,idSolicitud,idUsuario,mensaje,comentarioAnterior)
+VALUES (1,3,3,'Hola',NULL),
+(2,3,4,'Hola Usuario, cómo estás???',1),
+(3,3,4,'Necesito tu cédula por favor',2),
+(4,3,3,'Bien y tú?',1),
+(5,3,3,'http://lacedula.com',4),
 (6,4,6,'Hola',NULL),
 (7,4,5,'Hola Usuario, cómo estás???',6),
 (8,4,5,'Necesito tu cédula por favor',7),
@@ -255,3 +254,25 @@ VALUES (3,3,'Hola',NULL),
 (13,14,2,'Necesito tu cédula por favor',12),
 (14,14,9,'Bien y tú?',12),
 (15,14,9,'http://lacedula.com',14);
+
+-- DOCUMENTOS : 
+
+
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
+VALUES 
+(15, 'ReciboDePago', 'Recibo de Pago', 'link1', 'inactivo'),
+(15, 'Operacion', 'CEDULA', 'link2', 'activo'),
+(15, 'Operacion', 'Derechos', 'link6', 'activo'),
+(15, 'ReciboDePago', 'Recibo de Pago 2', 'link7', 'activo'),
+(3, 'Solicitado', 'Documento Solicitado ', 'link3', 'activo'),
+(4, 'Operacion', 'CEDULA', 'link4', 'activo'),
+(5, 'Operacion', 'cc', 'link5', 'activo'),
+(8, 'Operacion', 'c.c', 'link8', 'activo'),
+(14, 'ReciboDePago', 'Recibo de Pago 3', 'link9', 'INactivo'),
+(14, 'ReciboDePago', 'Recibo de Pago REALL', 'link10', 'activo'),
+(14, 'Operacion', 'NotasSemestre4', 'link11', 'activo'),
+(2, 'Solicitado', 'Trámite', 'link12', 'activo'),
+(14, 'Operacion', 'Recibo de agua', 'link13', 'activo'),
+(2, 'Operacion', 'CÉDULA', 'link14', 'activo'),
+(2, 'Operacion', 'CÉDULA ', 'link15', 'activo'),
+(5, 'Operacion', 'CÉDULA ', 'link16', 'activo');
