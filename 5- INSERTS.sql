@@ -220,6 +220,23 @@ VALUES
 (7, 3, 17),
 (6, 2, 8),
 (16, 1, 16),
-(13, 1, 10);
+(13, 1, 10),
+(14,4,16),
+(12,5,6),
+(10,3,2),
+(9,2,16),
+(4,5,2);
 
+-- DESCOMENTAR PARA ACTUALIZAR LOS IDS IMPARES
+UPDATE solicitud set estado='en proceso' where idSolicitud%2=0;
+CALL P;
+INSERT INTO PAGO(idSolicitud,fechaInicio,fechalimite) VALUES
+(2,current_date(),current_date()+1),(4,current_date(),current_date()+1),
+(6,current_date(),current_date()+1) , (8,current_date(),current_date()+1),
+(10,current_date(),current_date()+1),(12,current_date(),current_date()+1),
+(14,current_date(),current_date()+1);
+
+-- PROBAR QUE PASA SI SE EJECUTA 
+ 
+INSERT INTO PAGO(idSolicitud,fechaInicio,fechaLimite) VALUES(1,current_date(),current_date()+1);
 

@@ -1,6 +1,18 @@
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- 																									TRIGGERS          
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+DROP TRIGGER IF EXISTS verificarPagos;
+DELIMITER //
+CREATE TRIGGER verificarPagos BEFORE INSERT ON pago
+FOR EACH ROW 
+BEGIN
+	IF getEstadoSolicitud(new.idSolicitud) != 'en proceso' THEN 
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No puedes ingresar un pago a una solicitud que no está en proceso!';
+	END IF;
+END
+// DELIMITER ;
+
 -- Triggers en solicitud
 
 -- TRIGGERS QUE HACE QUE EXISTA LA RELACIÓN 1 A 1 EN LA TABLA USUARIO Y PAGO

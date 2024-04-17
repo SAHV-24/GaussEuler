@@ -23,18 +23,17 @@ CREATE TABLE Unidad (
 			  );
 
 -- Tramite
-CREATE TABLE `tramite` (
-			`idTramite` int NOT NULL AUTO_INCREMENT,
-			`idUnidad` int NOT NULL,
-			`idNormativa` int NOT NULL,
-			`nombre` varchar(200) NOT NULL,
-			`descripcion` TEXT NOT NULL,
-			`costo` decimal(12,2) DEFAULT NULL,
-			PRIMARY KEY (`idTramite`),
-			KEY `idUnidad` (`idUnidad`),
-			KEY `idNormativa` (`idNormativa`),
-			CONSTRAINT `tramite_ibfk_1` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`),
-			CONSTRAINT `tramite_ibfk_2` FOREIGN KEY (`idNormativa`) REFERENCES `normativa` (`idNormativa`)
+CREATE TABLE Tramite (
+			idTramite int NOT NULL AUTO_INCREMENT,
+			idUnidad int NOT NULL,
+			idNormativa int NOT NULL,
+			nombre varchar(200) NOT NULL,
+			descripcion TEXT NOT NULL,
+			costo decimal(12,2) DEFAULT NULL,
+            
+			PRIMARY KEY (idTramite),
+            FOREIGN KEY(idUnidad) REFERENCES unidad(idunidad),
+            FOREIGN KEY (idNormativa) REFERENCES normativa(idNormativa)
 );
 
 CREATE TABLE Usuario 	(
