@@ -1,4 +1,5 @@
--- FUNCION para obtener el ESTADO de la Solicitud
+
+-- FUNCIÓN para obtener el ESTADO de la Solicitud
 
 DROP FUNCTION IF EXISTS getEstadoSolicitud;
 

@@ -1,41 +1,3 @@
-CREATE DATABASE proyecto;
-USE proyecto;
-
--- Normativa
-CREATE TABLE Normativa (
-			idNormativa int NOT NULL AUTO_INCREMENT,
-			linkPlantilla TEXT NOT NULL,
-			descripcionNormativa MEDIUMTEXT NOT NULL,
-			fecha DATETIME NOT NULL DEFAULT NOW(),
-			esVigente BOOLEAN NOT NULL,
-			PRIMARY KEY (idNormativa)
-			);
--- Unidad
-CREATE TABLE Unidad (
-			  idUnidad int NOT NULL AUTO_INCREMENT,
-			  nombreUnidad varchar(100) NOT NULL,
-			  extension int NOT NULL,
-			  correo varchar(100) NOT NULL,
-	
-			  PRIMARY KEY (idUnidad)
-                      );
-
--- Tramite
-CREATE TABLE `tramite` (
-			`idTramite` int NOT NULL AUTO_INCREMENT,
-			`idUnidad` int NOT NULL,
-			`idNormativa` int NOT NULL,
-			`nombre` varchar(200) NOT NULL,
-			`descripcion` TEXT NOT NULL,
-			`costo` decimal(12,2) DEFAULT NULL,
-			PRIMARY KEY (`idTramite`),
-			KEY `idUnidad` (`idUnidad`),
-			KEY `idNormativa` (`idNormativa`),
-			CONSTRAINT `tramite_ibfk_1` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`),
-			CONSTRAINT `tramite_ibfk_2` FOREIGN KEY (`idNormativa`) REFERENCES `normativa` (`idNormativa`)
-);
-
--- Usuario
 CREATE TABLE Usuario 	(
 			idUsuario INT NOT NULL AUTO_INCREMENT,
 			identificacion INT NOT NULL,
@@ -43,8 +5,8 @@ CREATE TABLE Usuario 	(
 			nombre VARCHAR(100) NOT NULL,
 			apellido VARCHAR(100) NOT NULL,
 			correoElectronico VARCHAR(200) NOT NULL,
-			telefono INT NOT NULL,
-            sexo ENUM ('H','M','O'),
+			telefono BIGINT NOT NULL,
+            sexo ENUM('H','M','O'),
 			
 			PRIMARY KEY(idUsuario),
 			UNIQUE(identificacion,tipo)
@@ -106,9 +68,3 @@ CREATE TABLE Comentario(
 			FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario),
 			FOREIGN KEY (comentarioAnterior) REFERENCES comentario(idComentario)
                         );
-						
-
-
-                
-
-
