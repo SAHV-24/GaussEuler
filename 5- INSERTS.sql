@@ -237,6 +237,21 @@ INSERT INTO PAGO(idSolicitud,fechaInicio,fechalimite) VALUES
 (14,current_date(),current_date()+1);
 
 -- PROBAR QUE PASA SI SE EJECUTA 
- 
-INSERT INTO PAGO(idSolicitud,fechaInicio,fechaLimite) VALUES(1,current_date(),current_date()+1);
+ -- INSERT INTO PAGO(idSolicitud,fechaInicio,fechaLimite) VALUES(1,current_date(),current_date()+1);
 
+INSERT INTO comentario (idSolicitud,idUsuario,mensaje,comentarioAnterior)
+VALUES (3,3,'Hola',NULL),
+(3,4,'Hola Usuario, cómo estás???',1),
+(3,4,'Necesito tu cédula por favor',2),
+(3,3,'Bien y tú?',1),
+(3,3,'http://lacedula.com',4),
+(6,4,6,'Hola',NULL),
+(7,4,5,'Hola Usuario, cómo estás???',6),
+(8,4,5,'Necesito tu cédula por favor',7),
+(9,4,6,'Bien y tú?',6),
+(10,4,6,'http://lacedula.com',9)
+,(11,14,9,'Hola',NULL),
+(12,14,2,'Hola Usuario, cómo estás???',11),
+(13,14,2,'Necesito tu cédula por favor',12),
+(14,14,9,'Bien y tú?',12),
+(15,14,9,'http://lacedula.com',14);
