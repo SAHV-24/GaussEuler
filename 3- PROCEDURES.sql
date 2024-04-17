@@ -56,8 +56,6 @@ DELIMITER //
 	END;
 // DELIMITER ;                                      
 
-<<<<<<< HEAD
-=======
 -- Cambiar el estado de un determinado Documento:
 DROP PROCEDURE IF EXISTS cambiarEstadoDocumento;
 
@@ -97,5 +95,3 @@ BEGIN
 // DELIMITER ; 
 
 
-
->>>>>>> 105ee08be44f8961d7b4efccc82fc2d964f818df
