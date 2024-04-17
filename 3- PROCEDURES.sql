@@ -54,3 +54,4 @@ DELIMITER //
 	SELECT elId, idSolicitud, estadoDePago FROM pago WHERE idSolicitud=elID;
 	END;
 // DELIMITER ;                                      
+

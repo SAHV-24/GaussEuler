@@ -107,6 +107,17 @@ CREATE TABLE Comentario(
                         );
 						
 
+CREATE TABLE auditoria_cancelaciones (
+	
+    idCancelacion INT NOT NULL AUTO_INCREMENT,
+    idSolicitud INT NOT NULL,
+    tipo VARCHAR(50),
+    fecha DATETIME NOT NULL,
+    PRIMARY KEY (idCancelacion),
+    CONSTRAINT relacion_idSolicitud FOREIGN KEY (idSolicitud) REFERENCES solicitud(idSolicitud)
+    
+);
+
 
                 
 

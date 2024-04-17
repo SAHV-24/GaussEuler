@@ -17,7 +17,7 @@ INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, 
 -- Inserts para Solicitud
 -- Suponiendo que los ids de Usuario y Tramite existen y son 1 y 1 respectivamente
 INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite, estado) VALUES (1, 2, 1, 'pendiente');
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite, estado) VALUES (2, 1, 2, 'pendiente');
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite, estado) VALUES (2, 1, 1, 'pendiente');
 
 -- Inserts para Documento
 -- Suponiendo que los ids de Solicitud son 1 y 2 respectivamente
@@ -26,7 +26,7 @@ INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocument
 
 -- Inserts para Pago
 -- Suponiendo que los ids de Solicitud son 1 y 2 respectivamente
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (1, 'Por Pagar', CURRENT_DATE(), '2024-04-30', 100.00);
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (1, 'Por Pagar', CURRENT_DATE(), '2024-04-10', 100.00);
 INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (2, 'Por Pagar', CURRENT_DATE(), '2024-04-30', 150.00);
 
 -- Inserts para Comentario

@@ -42,6 +42,27 @@ BEGIN
 END //
 DELIMITER ;
 
+
+-- Mandar a auditoria las solicitudes canceladas por el usuario
+DROP TRIGGER IF EXISTS registrar_cancelacionxUsuario;
+
+DELIMITER //
+CREATE TRIGGER registrar_cancelacionxUsuario AFTER UPDATE ON solicitud
+FOR EACH ROW
+BEGIN
+
+	DECLARE id INT;
+	SET id = NEW.idSolicitud;
+    
+	IF getEstadoSolicitud(id)='cancelado' THEN
+		
+        INSERT INTO auditoria_cancelaciones (idSolicitud, tipo, fecha) VALUES (id, "USUARIO", NOW());
+        
+    END IF;
+END // 
+DELIMITER ;
+
+
 -- TRIGGERS PARA CAMBIAR EL MONTO DEL PAGO DE DE UN DOCUMENTO 'TRAMITADO'
 
 DROP trigger IF EXISTS INSERT_MONTO_SDOC_SOLICITADO;
@@ -67,7 +88,7 @@ FOR EACH ROW
 		declare id INT;
 		SET id=NEW.idSolicitud; 
 	
-		SET new.MONTO=(SELECT costo FROM tramite join solicitud using(idtramite)where idSolicitud = id);
+		SET new.MONTO=(SELECT costo FROM tramite join solicitud using(idtramite) where idSolicitud = id);
 	END //
 DELIMITER ; 
 
@@ -108,16 +129,18 @@ DELIMITER ;
 DROP TRIGGER IF EXISTS update_estado_limite_fecha;
 
 DELIMITER //
-CREATE TRIGGER update_estado_limite_fecha BEFORE UPDATE on pago
+CREATE TRIGGER update_estado_limite_fecha BEFORE UPDATE ON pago
 FOR EACH ROW
 
 BEGIN
 
 	DECLARE id INT;
 	SET id = OLD.idSolicitud;
-
+    
 	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='en proceso' THEN
-		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud;
+		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud = id;
+        INSERT INTO auditoria_cancelaciones (idSolicitud, tipo, fecha) VALUES (id, "SISTEMA", NOW());
+        
     END IF;
 END // 
 DELIMITER ; 
