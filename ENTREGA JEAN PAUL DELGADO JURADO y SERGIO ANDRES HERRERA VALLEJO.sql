@@ -45,6 +45,7 @@ CREATE TABLE Usuario 	(
 			apellido VARCHAR(100) NOT NULL,
 			correoElectronico VARCHAR(200) NOT NULL,
 			telefono BIGINT NOT NULL,
+            sexo ENUM('H','M','O'),
 			
 			PRIMARY KEY(idUsuario),
 			UNIQUE(identificacion,tipo)
@@ -450,54 +451,223 @@ BEGIN
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- 																									INSERTS          
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Acta de Grado
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://actadegrado.pdf', 'Normativa que establece los requisitos y procedimientos para la obtención del Acta de Grado.', 1);
 
--- Inserts para la tabla Normativa
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link1.com', 'Descripción normativa 1', 1);
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link2.com', 'Descripción normativa 2', 0);
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link3.com', 'Descripción normativa 3', 1);
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link4.com', 'Descripción normativa 4', 0);
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente) VALUES ('http://link5.com', 'Descripción normativa 5', 1);
+-- Extensión de Créditos
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://extensiondecreditos.pdf', 'Normativa que regula el proceso para solicitar una extensión de créditos académicos.', 1);
 
--- Inserts para la tabla Unidad
-INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 1', 1234, 'unidad1@example.com');
-INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 2', 5678, 'unidad2@example.com');
-INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 3', 9012, 'unidad3@example.com');
-INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 4', 3456, 'unidad4@example.com');
-INSERT INTO Unidad (nombreUnidad, extension, correo) VALUES ('Unidad 5', 7890, 'unidad5@example.com');
+-- Actualización de Documento de Identidad
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://actualizaciondocumento.pdf', 'Normativa que establece los procedimientos para la actualización del documento de identidad de los estudiantes.', 1);
 
--- Inserts para la tabla Tramite
-INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (1, 1, 'Trámite 1', 'Descripción trámite 1', 50.00);
-INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (2, 2, 'Trámite 2', 'Descripción trámite 2', 75.00);
-INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (3, 3, 'Trámite 3', 'Descripción trámite 3', 100.00);
-INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (4, 4, 'Trámite 4', 'Descripción trámite 4', 125.00);
-INSERT INTO tramite (idUnidad, idNormativa, nombre, descripcion, costo) VALUES (5, 5, 'Trámite 5', 'Descripción trámite 5', 150.00);
+-- Actualización de Datos Personales
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://actualizaciondatos.pdf', 'Normativa que regula el proceso de actualización de datos personales de los estudiantes.', 1);
 
--- Inserts para la tabla Usuario
-INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (123456789, 'Administrativo', 'Juan', 'Pérez', 'juanperez@example.com', 1234567890);
-INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (987654321, 'Estudiante', 'María', 'González', 'mariagonzalez@example.com', 9876543210);
-INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (456789123, 'Docente', 'Luis', 'Martínez', 'luismartinez@example.com', 4567891230);
-INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (321654987, 'Empleado', 'Ana', 'Sánchez', 'anasanchez@example.com', 3216549870);
-INSERT INTO Usuario (identificacion, tipo, nombre, apellido, correoElectronico, telefono) VALUES (654321987, 'Administrativo', 'Pedro', 'López', 'pedrolopez@example.com', 6543219870);
+-- Modificación de Matrícula Académica
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://modificacionmatricula.pdf', 'Normativa que establece los procedimientos para realizar modificaciones en la matrícula académica.', 1);
 
--- Inserts para la tabla Solicitud
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (1, 2, 1);
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (2, 3, 2);
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (3, 4, 3);
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (4, 5, 4);
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite) VALUES (5, 1, 5);
+-- Solicitud de Documento Académico
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://solicituddocumento.pdf', 'Normativa que regula el proceso para solicitar documentos académicos como certificados y constancias.', 1);
 
--- Inserts para la tabla Documento
-INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (1, 'ReciboDePago', 'Recibo de Pago 1', 'http://documento1.com', 'activo');
-INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (2, 'Operacion', 'Operación 2', 'http://documento2.com', 'inactivo');
-INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (3, 'Solicitado', 'Documento Solicitado 3', 'http://documento3.com', 'activo');
-INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (4, 'Operacion', 'Operación 4', 'http://documento4.com', 'activo');
-INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento) VALUES (5, 'ReciboDePago', 'Recibo de Pago 5', 'http://documento5.com', 'inactivo');
+-- Solicitud de Intercambio MOVE
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://solicitudintercambio.pdf', 'Normativa que establece los requisitos y procedimientos para solicitar participar en el programa de intercambio estudiantil MOVE.', 1);
 
--- Inserts para la tabla Pago
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (1, 'Pagado', '2024-04-13', '2024-05-13', 50.00);
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (2, 'Por Pagar', '2024-04-13', '2024-05-13', 75.00);
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (3, 'Pagado', '2024-04-13', '2024-05-13', 100.00);
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (4, 'Por Pagar', '2024-04-13', '2024-05-13', 125.00);
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto) VALUES (5, 'Pagado', '2024-04-13', '2024-05-13', 150.00);
+-- Solicitud de Servicios de Apoyo Estudiantil
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://solicitudapoyo.pdf', 'Normativa que regula el proceso para solicitar servicios de apoyo estudiantil ofrecidos por la universidad.', 1);
 
---
+-- Modificación de Horario
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://modificacionhorario.pdf', 'Normativa que establece los procedimientos para solicitar modificaciones en el horario de clases.', 1);
+
+-- Certificado de Matrícula
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://certificadomatricula.pdf', 'Normativa que regula el proceso para obtener un certificado de matrícula.', 1);
+
+-- Certificado Laboral
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://certificadolaboral.pdf', 'Normativa que establece los procedimientos para solicitar un certificado laboral.', 1);
+
+-- Certificado de Publicaciones
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://certificadopublicaciones.pdf', 'Normativa que regula el proceso para obtener un certificado de publicaciones académicas.', 1);
+
+-- Certificado de Prácticas y Pasantías Institucionales
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://certificadopracticas.pdf', 'Normativa que establece los procedimientos para obtener un certificado de prácticas y pasantías institucionales.', 1);
+
+-- Certificado Oficial de Notas
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://certificadonotas.pdf', 'Normativa que regula el proceso para obtener un certificado oficial de notas.', 1);
+
+-- Solicitud de Contenidos Programáticos
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://solicitudcontenidos.pdf', 'Normativa que establece los procedimientos para solicitar contenidos programáticos de cursos y asignaturas.', 1);
+
+-- Solicitud de Cancelación de Semestre
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://solicitudcancelacionsemestre.pdf', 'Normativa que regula el proceso para solicitar la cancelación de un semestre.', 1);
+
+-- Solicitud de Cancelación de Materias
+INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
+VALUES ('http://solicitudcancelacionmaterias.pdf', 'Normativa que establece los procedimientos para solicitar la cancelación de materias inscritas.', 1);
+
+
+-- UNIDADES:
+
+
+-- Registro Académico
+INSERT INTO Unidad (nombreUnidad, extension, correo)
+VALUES ('Registro Académico', 12345, 'registroacademico@universidad.edu');
+
+-- Departamento de Grados y Títulos
+INSERT INTO Unidad (nombreUnidad, extension, correo)
+VALUES ('Departamento de Grados y Títulos', 12346, 'gradosytitulos@universidad.edu');
+
+-- Unidad de Recursos Humanos
+INSERT INTO Unidad (nombreUnidad, extension, correo)
+VALUES ('Unidad de Recursos Humanos', 12347, 'recursoshumanos@universidad.edu');
+
+-- Oficina de Relaciones Externas
+INSERT INTO Unidad (nombreUnidad, extension, correo)
+VALUES ('Oficina de Relaciones Externas', 12348, 'relacionesexternas@universidad.edu');
+
+-- Departamento de Bienestar Universitario
+INSERT INTO Unidad (nombreUnidad, extension, correo)
+VALUES ('Departamento de Bienestar Universitario', 12349, 'bienestaruniversitario@universidad.edu');
+
+-- Departamento de Investigación
+INSERT INTO Unidad (nombreUnidad, extension, correo)
+VALUES ('Departamento de Investigación', 12350, 'investigacion@universidad.edu');
+
+-- Departamento de Prácticas Profesionales
+INSERT INTO Unidad (nombreUnidad, extension, correo)
+VALUES ('Departamento de Prácticas Profesionales', 12351, 'practicasprofesionales@universidad.edu');
+
+
+
+-- TRÁMITES
+
+-- Acta de Grado
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (1, 2, 1, 'Acta de Grado', 'Trámite para solicitar la expedición del Acta de Grado.', 10000);
+
+-- Extensión de Créditos
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (2, 1, 2, 'Extensión de Créditos', 'Trámite para solicitar una extensión de créditos académicos.', 12000);
+
+-- Actualización de Documento de Identidad
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (3, 1, 3, 'Actualización de Documento de Identidad', 'Trámite para actualizar el documento de identidad.', 15000);
+
+-- Actualización de Datos personales
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (4, 1, 4, 'Actualización de Datos Personales', 'Trámite para actualizar los datos personales del estudiante.', 8000);
+
+-- Modificación de Matrícula Académica
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (5, 1, 5, 'Modificación de Matrícula Académica', 'Trámite para modificar la matrícula académica del estudiante.', 9000);
+
+-- Solicitud de Documento Académico
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (6, 1, 6, 'Solicitud de Documento Académico', 'Trámite para solicitar documentos académicos como certificados y constancias.', 7000);
+
+-- Solicitud de Intercambio MOVE
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (7, 4, 7, 'Solicitud de Intercambio MOVE', 'Trámite para solicitar participación en el programa de intercambio estudiantil MOVE.', 11000);
+
+-- Solicitud de Servicios de Apoyo estudiantil
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (8, 5, 8, 'Solicitud de Servicios de Apoyo Estudiantil', 'Trámite para solicitar servicios de apoyo estudiantil.', 13000);
+
+-- Modificación de horario
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (9, 1, 9, 'Modificación de Horario', 'Trámite para solicitar modificaciones en el horario de clases.', 10000);
+
+-- Certificado de Matrícula
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (10, 1, 10, 'Certificado de Matrícula', 'Trámite para obtener un certificado de matrícula.', 8500);
+
+-- Certificado Laboral
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (11, 3, 11, 'Certificado Laboral', 'Trámite para solicitar un certificado laboral.', 9500);
+
+-- Certificado de publicaciones
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (12, 6, 12, 'Certificado de Publicaciones', 'Trámite para obtener un certificado de publicaciones académicas.', 11000);
+
+-- Certificado de prácticas y pasantías institucionales
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (13, 7, 13, 'Certificado de Prácticas y Pasantías Institucionales', 'Trámite para obtener un certificado de prácticas y pasantías institucionales.', 12000);
+
+-- Certificado oficial de notas
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (14, 1, 14, 'Certificado Oficial de Notas', 'Trámite para obtener un certificado oficial de notas.', 9000);
+
+-- Solicitud de contenidos programáticos
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (15, 1, 15, 'Solicitud de Contenidos Programáticos', 'Trámite para solicitar contenidos programáticos de cursos y asignaturas.', 8000);
+
+-- Solicitud de cancelación de semestre
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (16, 1, 16, 'Solicitud de Cancelación de Semestre', 'Trámite para solicitar la cancelación de un semestre.', 7500);
+
+-- Solicitud de cancelación de materias
+
+INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
+VALUES (17, 1, 17, 'Solicitud de Cancelación de Materias', 'Trámite para solicitar la cancelación de materias inscritas.', 8500);
+
+
+-- USUARIOS:
+
+
+
+INSERT INTO Usuario (sexo, identificacion, tipo, nombre, apellido, correoElectronico, telefono)
+VALUES 
+('H', 1001234567, 'Administrativo', 'Juan', 'García', 'juan_garcia@uao.edu.co', 1234567890),
+('M', 1112345678, 'Administrativo', 'María', 'Martínez', 'maria_martinez@uao.edu.co', 2345678901),
+('H', 1013456789, 'Administrativo', 'Pedro', 'López', 'pedro_lopez@uao.edu.co', 3456789012),
+('M', 1012345678, 'Administrativo', 'Ana', 'Rodríguez', 'ana_rodriguez@uao.edu.co', 4567890123),
+('H', 1009876543, 'Administrativo', 'Luis', 'Sánchez', 'luis_sanchez@uao.edu.co', 5678901234),
+('H', 1001234567, 'Estudiante', 'Juan', 'García', 'juan_garcia@uao.edu.co', 1234567890),
+('M', 1112345678, 'Estudiante', 'María', 'Martínez', 'maria_martinez@uao.edu.co', 2345678901),
+('H', 1001111111, 'Estudiante', 'Carlos', 'Pérez', 'carlos_perez@uao.edu.co', 1234567890),
+('M', 1112222222, 'Estudiante', 'Laura', 'Gómez', 'laura_gomez@uao.edu.co', 2345678901),
+('H', 1013333333, 'Estudiante', 'Andrés', 'Díaz', 'andres_diaz@uao.edu.co', 3456789012),
+('M', 1014444444, 'Estudiante', 'Ana', 'Rodríguez', 'ana_rodriguez@uao.edu.co', 4567890123),
+('H', 1005555555, 'Estudiante', 'Luis', 'Sánchez', 'luis_sanchez@uao.edu.co', 5678901234),
+('H', 1006666666, 'Estudiante', 'Diego', 'Martínez', 'diego_martinez@uao.edu.co', 6789012345),
+('M', 1117777777, 'Estudiante', 'Camila', 'García', 'camila_garcia@uao.edu.co', 7890123456),
+('H', 1018888888, 'Estudiante', 'José', 'Fernández', 'jose_fernandez@uao.edu.co', 8901234567),
+('M', 1029999999, 'Estudiante', 'Marcela', 'Hernández', 'marcela_hernandez@uao.edu.co', 9012345678),
+('M', 1030000000, 'Estudiante', 'Andrea', 'López', 'andrea_lopez@uao.edu.co', 1231231234),
+('H', 100111111, 'Docente', 'Ricardo', 'Gómez', 'ricardo_gomez@uao.edu.co', 1112223333),
+('M', 1101011111, 'Docente', 'Isabel', 'Díaz', 'isabel_diaz@uao.edu.co', 2223334444),
+('H', 1000000001, 'Docente', 'Mario', 'Martínez', 'mario_martinez@uao.edu.co', 3334445555),
+('M', 1004400004, 'Empleado', 'Lorena', 'González', 'lorena_gonzalez@uao.edu.co', 4445556666),
+('H', 1115555555, 'Empleado', 'Javier', 'Gutiérrez', 'javier_gutierrez@uao.edu.co', 5556667777);
+
+
+-- 
+
+-- SOLICITUD:
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite)
+VALUES 
+(6, 1, 17),
+(22, 2, 17),
+(3, 4, 3),
+(6, 5, 4),
+(2, 5, 5),
+(6, 4, 17),
+(7, 3, 17),
+(6, 2, 8),
+(16, 1, 16),
+(13, 1, 10);
+
