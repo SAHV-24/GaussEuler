@@ -52,6 +52,7 @@ DELIMITER ;
 -- Trigger que hace que no se inserte un nombre diferente al de una cédula, ejemplo: Si inserto una cédula "1110289035" no puedo tener dos registros con 
 -- Alguien que se llame Sergio y luego que se llame Juan David, tiene que tener consistencia esa identificación!
 
+drop trigger if exists verificar_ident_Usuario;
 DELIMITER //
 CREATE TRIGGER verificar_ident_Usuario BEFORE INSERT ON usuario
 FOR EACH ROW
@@ -62,7 +63,7 @@ BEGIN
     IF NEW.identificacion IN (SELECT DISTINCT(identificacion) from usuario) THEN 
 		SELECT DISTINCT(nombre) INTO elNombre FROM usuario WHERE identificacion=NEW.identificacion;
 		SELECT DISTINCT(apellido) INTO elApellido FROM usuario WHERE identificacion=NEW.identificacion;
-        IF elNombre != NEW.nombre OR elApellido != NEW.apellido THEN
+        IF elNombre != NEW.nombre OR elApellido != NEW.apellido AND elApellido IS NOT NULL AND elNombre IS NOT NULL THEN
 			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR, EL USUARIO DEBE DE TENER EL MISMO NOMBRE Y APELLIDO PARA ESTA IDENTIFICACIÓN';
 		END IF;
 	END IF;
