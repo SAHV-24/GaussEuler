@@ -78,7 +78,7 @@ CREATE TABLE Documento (
 			PRIMARY KEY(idDocumento),
 			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud)
                         );
-                        
+-- CONSTRAINTS                    
 -- Pago:
 CREATE TABLE Pago (
 			idPago INT NOT NULL AUTO_INCREMENT,
@@ -92,6 +92,7 @@ CREATE TABLE Pago (
 				FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud)
                         );
                         
+ALTER TABLE PAGO ADD CONSTRAINT revisarFechas CHECK (fechaInicio<=FechaLimite);    
 -- Comentario:
 CREATE TABLE Comentario(
 			idComentario INT NOT NULL AUTO_INCREMENT,

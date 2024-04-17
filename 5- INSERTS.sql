@@ -228,12 +228,9 @@ VALUES
 (4,5,2);
 
 -- DESCOMENTAR PARA ACTUALIZAR LOS IDS IMPARES
+-- UPDATE solicitud set estado='en proceso' where idSolicitud%2!=0;
 UPDATE solicitud set estado='en proceso' where idSolicitud%2=0;
-INSERT INTO PAGO(idSolicitud,fechaInicio,fechalimite) VALUES
-(2,current_date(),current_date()+1),(4,current_date(),current_date()+1),
-(6,current_date(),current_date()+1) , (8,current_date(),current_date()+1),
-(10,current_date(),current_date()+1),(12,current_date(),current_date()+1),
-(14,current_date(),current_date()+1);
+
 
 -- PROBAR QUE PASA SI SE EJECUTA 
  -- INSERT INTO PAGO(idSolicitud,fechaInicio,fechaLimite) VALUES(1,current_date(),current_date()+1);
@@ -276,3 +273,13 @@ VALUES
 (2, 'Operacion', 'CÉDULA', 'link14', 'activo'),
 (2, 'Operacion', 'CÉDULA ', 'link15', 'activo'),
 (5, 'Operacion', 'CÉDULA ', 'link16', 'activo');
+
+-- Insertar pagos en solicitudes seleccionadas
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto)
+VALUES 
+(4, 'Por Pagar', '2024-04-02', '2024-04-16', 1500),
+(6, 'Por Pagar', '2024-04-03', '2024-04-17', 2000),
+(8, 'Por Pagar', '2024-04-04', '2024-04-18', 2500),
+(10, 'Por Pagar', '2024-04-05', '2024-04-19', 3000),
+(12, 'Por Pagar', '2024-04-06', '2024-04-20', 3500),
+(14, 'Por Pagar', '2024-04-07', '2024-04-21', 4000);

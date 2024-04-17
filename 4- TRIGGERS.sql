@@ -58,18 +58,6 @@ BEGIN
 END
 // DELIMITER ; 
 
-DROP TRIGGER IF EXISTS relacionUnoAUnoPagoUPD;
-
-DELIMITER // 
-CREATE TRIGGER relacionUnoAUnoPagoUPD BEFORE UPDATE ON pago
-FOR EACH ROW
-BEGIN
-	IF NEW.idSolicitud IN (SELECT idSolicitud FROM pago) THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede insertar un nuevo pago puesto que ya existe un Pago Activo para esta Solicitud';
-	END IF;
-END
-// DELIMITER ; 
-
 -- Trigger que hace que no se inserte un nombre diferente al de una cédula, ejemplo: Si inserto una cédula "1110289035" no puedo tener dos registros con 
 -- Alguien que se llame Sergio y luego que se llame Juan David, tiene que tener consistencia esa identificación!
 
@@ -145,9 +133,10 @@ BEGIN
 	DECLARE id INT;
     SET id = NEW.idSolicitud;
     
-    IF id IN(SELECT idSolicitud FROM solicitud) THEN 
+    IF id IN(SELECT idSolicitud FROM solicitud) AND NEW.monto IS NULL THEN 
 		SET NEW.monto=(SELECT costo FROM tramite JOIN solicitud USING(idTramite) WHERE idSolicitud=id);
-	else
+	END IF;
+    IF id NOT IN (SELECT idSolicitud FROM solicitud) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La solicitud no existe';
     END IF;
     
@@ -198,8 +187,8 @@ BEGIN
 	DECLARE id INT;
 	SET id = OLD.idSolicitud;
 
-	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='en proceso' THEN
-		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud;
+	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='en proceso' AND old.estadoDePago='Por Pagar' THEN
+		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud=id;
     END IF;
 END // 
 DELIMITER ; 
