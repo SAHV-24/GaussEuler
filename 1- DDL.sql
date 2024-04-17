@@ -86,6 +86,7 @@ CREATE TABLE Pago (
 				estadoDePago ENUM('Pagado','Por Pagar') NOT NULL,
 				fechaInicio DATE NOT NULL,
 				fechaLimite DATE NOT NULL,
+                fechaDeCancelacion DATE NULL,
 				monto DECIMAL(12,2) NOT NULL,
 				
 				PRIMARY KEY(idPago),
@@ -93,6 +94,7 @@ CREATE TABLE Pago (
                         );
                         
 ALTER TABLE PAGO ADD CONSTRAINT revisarFechas CHECK (fechaInicio<=FechaLimite);    
+
 -- Comentario:
 CREATE TABLE Comentario(
 			idComentario INT NOT NULL AUTO_INCREMENT,

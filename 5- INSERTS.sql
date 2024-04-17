@@ -275,11 +275,11 @@ VALUES
 (5, 'Operacion', 'CÉDULA ', 'link16', 'activo');
 
 -- Insertar pagos en solicitudes seleccionadas
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto)
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
 VALUES 
-(4, 'Por Pagar', '2024-04-02', '2024-04-16', 1500),
-(6, 'Por Pagar', '2024-04-03', '2024-04-17', 2000),
-(8, 'Por Pagar', '2024-04-04', '2024-04-18', 2500),
-(10, 'Por Pagar', '2024-04-05', '2024-04-19', 3000),
-(12, 'Por Pagar', '2024-04-06', '2024-04-20', 3500),
-(14, 'Por Pagar', '2024-04-07', '2024-04-21', 4000);
+(4, 'Por Pagar', '2024-04-02', '2024-04-16', 1500, NULL),
+(6, 'Pagado', '2024-04-03', '2024-04-17', 2000,'2024-04-12'),
+(8, 'Por Pagar', '2024-04-04', '2024-04-18', 2500,NULL),
+(10, 'Por Pagar', '2024-04-05', '2024-04-19', 3000,NULL),
+(12, 'Pagado', '2024-04-06', '2024-04-20', 3500,'2024-04-10'),
+(14, 'Pagado', '2024-04-07', '2024-04-21', 4000,'2024-04-20');
