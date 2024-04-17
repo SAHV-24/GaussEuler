@@ -1,5 +1,5 @@
 
--- Procedures:
+-- Procedimientos para llamar a tablas:
 DROP PROCEDURE IF EXISTS u;
 DELIMITER // 
 CREATE PROCEDURE u()
@@ -46,6 +46,7 @@ CREATE PROCEDURE d()
 SELECT * FROM documento;
 // DELIMITER ; 
 
+
 -- Seleccionar pago por ID de la solicitud
 DROP procedure if exists estadoDePago;
 DELIMITER // 
@@ -55,3 +56,46 @@ DELIMITER //
 	END;
 // DELIMITER ;                                      
 
+<<<<<<< HEAD
+=======
+-- Cambiar el estado de un determinado Documento:
+DROP PROCEDURE IF EXISTS cambiarEstadoDocumento;
+
+DELIMITER // 
+CREATE PROCEDURE cambiarEstadoDocumento(IN idDoc INT) 
+BEGIN
+	DECLARE elEstado VARCHAR(50);
+    SELECT estadoDocumento INTO elEstado FROM documento WHERE idDocumento=idDoc;
+    
+    IF elEstado='activo' THEN
+		SET elEstado='inactivo';
+	ELSE
+		SET elEstado='activo';
+	END IF;    
+    
+    UPDATE documento SET estadoDocumento = elEstado WHERE idDocumento=idDoc;
+	SELECT CONCAT('Nuevo Estado: ',elEstado,'. Documento con ID: ',idDoc) AS 'Nuevo Mensaje';
+END
+// DELIMITER ;
+
+-- Revisa los Recibos De Pago Activos de una SOLICITUD:
+DROP PROCEDURE IF EXISTS reciboActivo;
+
+DELIMITER // 
+CREATE PROCEDURE reciboActivo(IN idSOLI INT)
+BEGIN
+	DECLARE cant INT;
+	SELECT COUNT(*) INTO cant FROM documento where idSolicitud=idSOLI AND tipoDocumento = 'ReciboDePago' AND estadoDocumento='activo';
+    
+    IF cant=1 THEN
+		SELECT * FROM documento where idSolicitud=idSOLI AND tipoDocumento = 'ReciboDePago' AND estadoDocumento='activo';
+    	ELSE 
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ' NO HAY RECIBOS DE PAGO ACTIVOS';
+	END IF;
+    
+    END
+// DELIMITER ; 
+
+
+
+>>>>>>> 105ee08be44f8961d7b4efccc82fc2d964f818df

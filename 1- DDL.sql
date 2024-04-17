@@ -44,6 +44,7 @@ CREATE TABLE Usuario 	(
 			apellido VARCHAR(100) NOT NULL,
 			correoElectronico VARCHAR(200) NOT NULL,
 			telefono INT NOT NULL,
+            sexo ENUM ('H','M','O'),
 			
 			PRIMARY KEY(idUsuario),
 			UNIQUE(identificacion,tipo)
