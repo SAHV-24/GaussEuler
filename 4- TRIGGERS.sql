@@ -2,6 +2,34 @@
 -- 																									TRIGGERS          
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+
+-- TRIGGER QUE CUANDO SE INGRESE UN COMENTARIO SE CAMBIE EL ESTADO A 'En proceso'
+DROP TRIGGER IF EXISTS Comentario_en_proceso;
+DELIMITER || 
+CREATE TRIGGER Comentario_en_proceso BEFORE INSERT ON comentario
+FOR EACH ROW
+
+BEGIN
+ 
+	IF new.idSolicitud NOT IN (SELECT idSolicitud FROM comentario) 
+    AND getEstadoSolicitud(NEW.idSolicitud) = 'pendiente' THEN
+		UPDATE solicitud SET estado = 'en proceso' WHERE idSolicitud=NEW.idSolicitud;
+	END IF;
+    
+    IF new.IdUsuario NOT IN (
+		SELECT idUsuario FROM solicitud where idSolicitud = NEW.idSolicitud
+        UNION 
+        SELECT idFuncionario FROM solicitud WHERE idSolicitud = NEW.idSolicitud    
+    ) THEN
+    
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ='Verificar el Usuario, este no pertenece a la solicitud';
+    
+    end if;
+    
+END
+|| DELIMITER ; 
+
 DROP TRIGGER IF EXISTS verificarPagos;
 DELIMITER //
 CREATE TRIGGER verificarPagos BEFORE INSERT ON pago
