@@ -283,3 +283,20 @@ VALUES
 (10, 'Por Pagar', '2024-04-05', '2024-04-19', 3000,NULL),
 (12, 'Pagado', '2024-04-06', '2024-04-20', 3500,'2024-04-10'),
 (14, 'Pagado', '2024-04-07', '2024-04-21', 4000,'2024-04-20');
+
+
+INSERT INTO solicitud (idUsuario,idFuncionario,idTramite)  VALUES (18,5,12),
+(19,3,2),(4,5,10),(12,2,17),
+(18,2,1),(18,5,14),(12,3,16);
+
+UPDATE solicitud SET estado='en proceso' WHERE idUsuario IN(18,19,4,12);
+
+
+INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion)
+VALUES(16,'Pagado',current_date(),current_date()+1,current_date()),
+(17,'Pagado',current_date(),current_date()+3,current_date()+1 ),
+(18,'Pagado',current_date(),current_date()+4,current_date()+2),
+(19,'Pagado',current_date(),current_date()+5,current_date()+1),
+(20,'Pagado',current_date(),current_date()+6,current_date()+3),
+(21,'Pagado',current_date(),current_date()+7,current_date()+5),
+(22,'Pagado',current_date(),current_date()+8,current_date()+1);
