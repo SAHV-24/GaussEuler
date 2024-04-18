@@ -107,7 +107,7 @@ CREATE TABLE Comentario(
 			PRIMARY KEY(idComentario),
 			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud),
 			FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario),
-			FOREIGN KEY (comentarioAnterior) REFERENCES comentario(idComentario);
+			FOREIGN KEY (comentarioAnterior) REFERENCES comentario(idComentario));
             
 -- Cancelacion:
 CREATE TABLE cancelacion (
@@ -120,4 +120,4 @@ CREATE TABLE cancelacion (
     CONSTRAINT relacion_idSolicitud FOREIGN KEY (idSolicitud) REFERENCES solicitud(idSolicitud)
     
 );
-                        );
+                    
