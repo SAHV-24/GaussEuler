@@ -14,3 +14,26 @@ BEGIN
 	RETURN res;
 END //
 DELIMITER ; 
+
+-- --------------------------------------------------------------
+
+DROP FUNCTION IF EXISTS verificarFecha;
+
+DELIMITER &&
+CREATE FUNCTION verificarFecha(elID INT) RETURNS BOOL 
+READS SQL DATA
+BEGIN
+	DECLARE laFecha Varchar(50);
+    DECLARE res BOOL;
+
+	SELECT fechaLimite INTO laFecha FROM pago WHERE idSolicitud=elID;
+    
+    IF laFecha<current_date() THEN
+		SET res=TRUE;
+	ELSE
+		SET res=FALSE;
+	END IF;
+    
+    RETURN res;
+END
+&& DELIMITER ; 
