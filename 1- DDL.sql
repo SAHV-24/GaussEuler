@@ -107,7 +107,7 @@ CREATE TABLE Comentario(
                         );
 						
 
-CREATE TABLE auditoria_cancelaciones (
+CREATE TABLE cancelacion (
 	
     idCancelacion INT NOT NULL AUTO_INCREMENT,
     idSolicitud INT NOT NULL,

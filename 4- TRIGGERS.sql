@@ -56,7 +56,7 @@ BEGIN
     
 	IF getEstadoSolicitud(id)='cancelado' THEN
 		
-        INSERT INTO auditoria_cancelaciones (idSolicitud, tipo, fecha) VALUES (id, "USUARIO", NOW());
+        INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, "USUARIO", NOW());
         
     END IF;
 END // 
@@ -139,7 +139,7 @@ BEGIN
     
 	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='en proceso' THEN
 		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud = id;
-        INSERT INTO auditoria_cancelaciones (idSolicitud, tipo, fecha) VALUES (id, "SISTEMA", NOW());
+        INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, "SISTEMA", NOW());
         
     END IF;
 END // 
@@ -183,5 +183,32 @@ SELECT COUNT(*) FROM documento WHERE idSolicitud= laID and ESTADOdocumento='Acti
 				SET MESSAGE_TEXT='ERROR, YA EXISTE UN RECIBO DE PAGO ACTIVO, DEBE DESACTIVARLO ANTES DE INSERTAR UN RECIBO DE PAGO';
 		END IF;
 END //
+
+DELIMITER ;
+
+
+-- Tigre para reforzar relación 1:1 entre cancelacion y solicitud
+
+DROP TRIGGER IF EXISTS one2oneSolicitudxCancelacion;
+
+DELIMITER //
+CREATE TRIGGER one2oneSolicitudxCancelacion BEFORE INSERT ON cancelacion
+FOR EACH ROW
+
+BEGIN
+	DECLARE id INT;
+    SET id = (NEW.idSolicitud);
+    
+    IF id IN (SELECT idSolicitud FROM cancelacion) THEN
+    
+		SIGNAL 	
+			SQLSTATE '45000' 
+            SET MESSAGE_TEXT = "Esta solicitud ya fue cancelada";
+    
+    END IF;   
+    
+    
+END //
+
 
 DELIMITER ;
