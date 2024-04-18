@@ -1,11 +1,12 @@
 -- Buscar las solictudes que estén prontas a vencer (menos de 3 días)
 
-SELECT s.idSolicitud as 'Solicitudes Próximas a Vencer', p.fechaInicio, p.fechaLimite
+SELECT s.idSolicitud as 'Solicitudes Próximas a Vencer', p.fechaInicio, p.fechaLimite, p.fechaLimite-current_date() as 'Días restantes'
 FROM solicitud s
 JOIN PAGO P
 USING (idSolicitud) WHERE p.estadoDePago='Por Pagar'
- AND current_date()-p.fechaLimite BETWEEN 0 AND 3;
+ AND p.fechaLimite-current_date()BETWEEN 0 AND 3;
 SELECT * FROM PAGO;
+SELECT fechaLimite,idSolicitud FROM pago;
 
 -- Buscar el estudiante que más solicitudes ha realizado
 SELECT  u.idUsuario,u.nombre, u.apellido, u.correoElectronico, t.cant AS 'Cantidad Máxima'

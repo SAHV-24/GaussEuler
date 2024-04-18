@@ -33,11 +33,14 @@ END
 DROP TRIGGER IF EXISTS verificarPagos;
 
 DELIMITER //
-CREATE TRIGGER verificarPagos BEFORE INSERT ON pago
+CREATE TRIGGER verificarPagos after INSERT ON pago
 FOR EACH ROW 
 BEGIN
 	IF getEstadoSolicitud(new.idSolicitud) != 'en proceso' THEN 
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No puedes ingresar un pago a una solicitud que no está en proceso!';
+	END IF;
+    IF NEW.fechaInicio<(SELECT DATE(fechaInicio) FROM solicitud WHERE idSolicitud = new.idSolicitud) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha De inicio de la solicitud no coincide con la del pago';
 	END IF;
 END
 // DELIMITER ;
