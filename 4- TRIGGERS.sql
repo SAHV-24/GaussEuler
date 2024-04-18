@@ -31,6 +31,7 @@ END
 || DELIMITER ; 
 
 DROP TRIGGER IF EXISTS verificarPagos;
+
 DELIMITER //
 CREATE TRIGGER verificarPagos BEFORE INSERT ON pago
 FOR EACH ROW 
@@ -181,34 +182,12 @@ DELIMITER //
 CREATE TRIGGER verificarFechaDeCancelacion BEFORE INSERT ON PAGO
 FOR EACH ROW
 BEGIN
-	IF NEW.fechaDeCancelacion IS NOT NULL AND NEW.fechaDeCancelacion 
-    NOT BETWEEN NEW.fechaInicio AND NEW.fechaLimite THEN
+	IF NEW.fechaDeCancelacion IS NOT NULL AND NEW.fechaDeCancelacion NOT BETWEEN NEW.fechaInicio AND NEW.fechaLimite THEN
 		SIGNAL sqlstate '45000' SET MESSAGE_TEXT = 'NO ES POSIBLE INSERTAR ESTA FECHA DE CANCELACIÓN PORQUE HAY UN ERROR CON LAS FECHAS';
     END IF;
     
-    
-    
 END
 // DELIMITER ;
-
--- TRIGGER PARA CAMBIAR EL ESTADO DE LA SOLICITUD SI SE PASÓ DE LA FECHA LÍMITE.
-
-DROP TRIGGER IF EXISTS update_estado_limite_fecha;
-
-DELIMITER //
-CREATE TRIGGER update_estado_limite_fecha BEFORE UPDATE on pago
-FOR EACH ROW
-
-BEGIN
-
-	DECLARE id INT;
-	SET id = OLD.idSolicitud;
-
-	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='en proceso' AND old.estadoDePago='Por Pagar' THEN
-		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud=id;
-    END IF;
-END // 
-DELIMITER ; 
 
 -- TRIGGER que NO permite que se agreguen más comentarios luego de que se cerró la solicitud.
 
@@ -263,3 +242,76 @@ BEGIN
 	END IF;
 END;
 // DELIMITER ;  
+
+-- AUDITORIA CANCELACIONES: 
+
+-- Mandar a auditoria las solicitudes canceladas por el usuario
+DROP TRIGGER IF EXISTS registrar_cancelacionxUsuario;
+
+DELIMITER //
+CREATE TRIGGER registrar_cancelacionxUsuario AFTER UPDATE ON solicitud
+FOR EACH ROW
+BEGIN
+
+	DECLARE id INT;
+	SET id = NEW.idSolicitud;
+   
+	IF getEstadoSolicitud(id)='cancelado' AND verificarFecha(id)=0 THEN
+		
+        INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, "USUARIO", NOW());
+        
+    END IF;
+    
+    IF getEstadoSolicitud(id)='cancelado' AND  verificarFecha(id)=1 THEN
+		
+        INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, "SISTEMA", NOW());
+        
+    END IF;    
+    
+END // 
+DELIMITER ;
+
+
+DROP TRIGGER IF EXISTS update_estado_limite_fecha;
+
+DELIMITER //
+CREATE TRIGGER update_estado_limite_fecha BEFORE UPDATE ON pago
+FOR EACH ROW
+
+BEGIN
+
+	DECLARE id INT;
+	SET id = OLD.idSolicitud;
+    
+	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='en proceso' THEN
+		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud = id;
+        -- INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, "SISTEMA", NOW());
+        
+    END IF;
+END // 
+DELIMITER ; 
+
+
+-- Trigger para reforzar relación 1:1 entre cancelacion y solicitud
+
+DROP TRIGGER IF EXISTS one2oneSolicitudxCancelacion;
+
+DELIMITER //
+CREATE TRIGGER one2oneSolicitudxCancelacion BEFORE INSERT ON cancelacion
+FOR EACH ROW
+
+BEGIN
+	DECLARE id INT;
+    SET id = (NEW.idSolicitud);
+    
+    IF id IN (SELECT idSolicitud FROM cancelacion) THEN
+    
+		SIGNAL 	
+			SQLSTATE '45000' 
+            SET MESSAGE_TEXT = "Esta solicitud ya fue cancelada";
+    
+    END IF;   
+    
+    
+END //
+DELIMITER ;

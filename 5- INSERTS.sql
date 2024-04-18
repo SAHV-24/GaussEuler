@@ -103,7 +103,6 @@ INSERT INTO Unidad (nombreUnidad, extension, correo)
 VALUES ('Departamento de Prácticas Profesionales', 12351, 'practicasprofesionales@universidad.edu');
 
 
-
 -- TRÁMITES
 
 -- Acta de Grado
