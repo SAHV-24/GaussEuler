@@ -107,5 +107,17 @@ CREATE TABLE Comentario(
 			PRIMARY KEY(idComentario),
 			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud),
 			FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario),
-			FOREIGN KEY (comentarioAnterior) REFERENCES comentario(idComentario)
+			FOREIGN KEY (comentarioAnterior) REFERENCES comentario(idComentario);
+            
+-- Cancelacion:
+CREATE TABLE cancelacion (
+	
+    idCancelacion INT NOT NULL AUTO_INCREMENT,
+    idSolicitud INT NOT NULL,
+    tipo VARCHAR(50),
+    fecha DATETIME NOT NULL,
+    PRIMARY KEY (idCancelacion),
+    CONSTRAINT relacion_idSolicitud FOREIGN KEY (idSolicitud) REFERENCES solicitud(idSolicitud)
+    
+);
                         );
