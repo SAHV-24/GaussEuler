@@ -40,8 +40,7 @@ CREATE TABLE Normativa (
 			PRIMARY KEY (idNormativa),
             FOREIGN KEY(idTRamite) REFERENCES tramite (idTramite)
 			);
-
-
+            
 CREATE TABLE Usuario 	(
 			idUsuario INT NOT NULL AUTO_INCREMENT,
 			identificacion INT NOT NULL,
