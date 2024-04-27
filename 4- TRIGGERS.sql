@@ -220,10 +220,9 @@ BEGIN
     DECLARE cant INT;
 	SET laId = NEW.idSOLICITUD;
                 
-    SET cant = (
-SELECT COUNT(*) FROM documento WHERE idSolicitud= laID and ESTADOdocumento='Activo' and tipoDocumento='ReciboDePago');
+    SET cant = (SELECT COUNT(*) FROM documento WHERE idSolicitud= laID and ESTADOdocumento='Activo' and tipoDocumento='ReciboDePago');
 
-		IF new.tipoDocumento ='reciboDePago' AND cant=1 THEN
+		IF cant>=1 THEN
 
 				SIGNAL SQLSTATE '45000' 
 				SET MESSAGE_TEXT='ERROR, YA EXISTE UN RECIBO DE PAGO ACTIVO, DEBE DESACTIVARLO ANTES DE INSERTAR UN RECIBO DE PAGO';
@@ -318,3 +317,19 @@ BEGIN
     
 END //
 DELIMITER ;
+
+
+DROP TRIGGER IF EXISTS checkEstadoEnProceso;
+DELIMITER //
+CREATE TRIGGER checkEstadoEnProceso BEFORE UPDATE ON solicitud
+FOR EACH ROW
+BEGIN
+
+	IF OLD.estado='pendiente' AND NEW.estado='completado' THEN 
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'La solicitud no puede ser completada si no está en proceso!';
+    END IF;    
+		
+ END;
+// DELIMITER ;
+

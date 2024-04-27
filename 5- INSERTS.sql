@@ -2,74 +2,6 @@
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- 																									INSERTS          
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Acta de Grado
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://actadegrado.pdf', 'Normativa que establece los requisitos y procedimientos para la obtención del Acta de Grado.', 1);
-
--- Extensión de Créditos
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://extensiondecreditos.pdf', 'Normativa que regula el proceso para solicitar una extensión de créditos académicos.', 1);
-
--- Actualización de Documento de Identidad
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://actualizaciondocumento.pdf', 'Normativa que establece los procedimientos para la actualización del documento de identidad de los estudiantes.', 1);
-
--- Actualización de Datos Personales
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://actualizaciondatos.pdf', 'Normativa que regula el proceso de actualización de datos personales de los estudiantes.', 1);
-
--- Modificación de Matrícula Académica
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://modificacionmatricula.pdf', 'Normativa que establece los procedimientos para realizar modificaciones en la matrícula académica.', 1);
-
--- Solicitud de Documento Académico
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicituddocumento.pdf', 'Normativa que regula el proceso para solicitar documentos académicos como certificados y constancias.', 1);
-
--- Solicitud de Intercambio MOVE
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudintercambio.pdf', 'Normativa que establece los requisitos y procedimientos para solicitar participar en el programa de intercambio estudiantil MOVE.', 1);
-
--- Solicitud de Servicios de Apoyo Estudiantil
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudapoyo.pdf', 'Normativa que regula el proceso para solicitar servicios de apoyo estudiantil ofrecidos por la universidad.', 1);
-
--- Modificación de Horario
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://modificacionhorario.pdf', 'Normativa que establece los procedimientos para solicitar modificaciones en el horario de clases.', 1);
-
--- Certificado de Matrícula
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadomatricula.pdf', 'Normativa que regula el proceso para obtener un certificado de matrícula.', 1);
-
--- Certificado Laboral
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadolaboral.pdf', 'Normativa que establece los procedimientos para solicitar un certificado laboral.', 1);
-
--- Certificado de Publicaciones
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadopublicaciones.pdf', 'Normativa que regula el proceso para obtener un certificado de publicaciones académicas.', 1);
-
--- Certificado de Prácticas y Pasantías Institucionales
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadopracticas.pdf', 'Normativa que establece los procedimientos para obtener un certificado de prácticas y pasantías institucionales.', 1);
-
--- Certificado Oficial de Notas
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadonotas.pdf', 'Normativa que regula el proceso para obtener un certificado oficial de notas.', 1);
-
--- Solicitud de Contenidos Programáticos
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudcontenidos.pdf', 'Normativa que establece los procedimientos para solicitar contenidos programáticos de cursos y asignaturas.', 1);
-
--- Solicitud de Cancelación de Semestre
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudcancelacionsemestre.pdf', 'Normativa que regula el proceso para solicitar la cancelación de un semestre.', 1);
-
--- Solicitud de Cancelación de Materias
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudcancelacionmaterias.pdf', 'Normativa que establece los procedimientos para solicitar la cancelación de materias inscritas.', 1);
-
 
 -- UNIDADES:
 
@@ -103,76 +35,102 @@ INSERT INTO Unidad (nombreUnidad, extension, correo)
 VALUES ('Departamento de Prácticas Profesionales', 12351, 'practicasprofesionales@universidad.edu');
 
 
+
+
 -- TRÁMITES
 
 -- Acta de Grado
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (1, 2, 1, 'Acta de Grado', 'Trámite para solicitar la expedición del Acta de Grado.', 10000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (1, 2,  'Acta de Grado', 'Trámite para solicitar la expedición del Acta de Grado.', 10000,'http://actadegrado.pdf');
 
 -- Extensión de Créditos
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (2, 1, 2, 'Extensión de Créditos', 'Trámite para solicitar una extensión de créditos académicos.', 12000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (2, 1,  'Extensión de Créditos', 'Trámite para solicitar una extensión de créditos académicos.', 12000,'http://extensiondecreditos.pdf');
 
 -- Actualización de Documento de Identidad
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (3, 1, 3, 'Actualización de Documento de Identidad', 'Trámite para actualizar el documento de identidad.', 15000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (3, 1, 'Actualización de Documento de Identidad', 'Trámite para actualizar el documento de identidad.', 15000,'http://actualizaciondocumento.pdf');
 
 -- Actualización de Datos personales
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (4, 1, 4, 'Actualización de Datos Personales', 'Trámite para actualizar los datos personales del estudiante.', 8000);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (4, 1,  'Actualización de Datos Personales', 'Trámite para actualizar los datos personales del estudiante.', 8000,'http://actualizaciondatos.pdf');
 
 -- Modificación de Matrícula Académica
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (5, 1, 5, 'Modificación de Matrícula Académica', 'Trámite para modificar la matrícula académica del estudiante.', 9000);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (5, 1,  'Modificación de Matrícula Académica', 'Trámite para modificar la matrícula académica del estudiante.', 9000,'http://modificacionmatricula.pdf');
 
 -- Solicitud de Documento Académico
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (6, 1, 6, 'Solicitud de Documento Académico', 'Trámite para solicitar documentos académicos como certificados y constancias.', 7000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (6, 1,  'Solicitud de Documento Académico', 'Trámite para solicitar documentos académicos como certificados y constancias.', 7000,'http://solicituddocumento.pdf');
 
 -- Solicitud de Intercambio MOVE
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (7, 4, 7, 'Solicitud de Intercambio MOVE', 'Trámite para solicitar participación en el programa de intercambio estudiantil MOVE.', 11000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (7, 4,  'Solicitud de Intercambio MOVE', 'Trámite para solicitar participación en el programa de intercambio estudiantil MOVE.', 11000,'http://solicitudintercambio.pdf');
 
 -- Solicitud de Servicios de Apoyo estudiantil
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (8, 5, 8, 'Solicitud de Servicios de Apoyo Estudiantil', 'Trámite para solicitar servicios de apoyo estudiantil.', 13000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (8, 5,  'Solicitud de Servicios de Apoyo Estudiantil', 'Trámite para solicitar servicios de apoyo estudiantil.', 13000,'http://solicitudapoyo.pdf');
 
 -- Modificación de horario
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (9, 1, 9, 'Modificación de Horario', 'Trámite para solicitar modificaciones en el horario de clases.', 10000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (9, 1,  'Modificación de Horario', 'Trámite para solicitar modificaciones en el horario de clases.', 10000,'http://modificacionhorario.pdf');
 
 -- Certificado de Matrícula
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (10, 1, 10, 'Certificado de Matrícula', 'Trámite para obtener un certificado de matrícula.', 8500);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (10, 1,  'Certificado de Matrícula', 'Trámite para obtener un certificado de matrícula.', 8500,'http://certificadomatricula.pdf');
 
 -- Certificado Laboral
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (11, 3, 11, 'Certificado Laboral', 'Trámite para solicitar un certificado laboral.', 9500);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (11, 3, 'Certificado Laboral', 'Trámite para solicitar un certificado laboral.', 9500,'http://certificadolaboral.pdf');
 
 -- Certificado de publicaciones
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (12, 6, 12, 'Certificado de Publicaciones', 'Trámite para obtener un certificado de publicaciones académicas.', 11000);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (12, 6, 'Certificado de Publicaciones', 'Trámite para obtener un certificado de publicaciones académicas.', 11000,'http://certificadopublicaciones.pdf');
 
 -- Certificado de prácticas y pasantías institucionales
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (13, 7, 13, 'Certificado de Prácticas y Pasantías Institucionales', 'Trámite para obtener un certificado de prácticas y pasantías institucionales.', 12000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (13, 7, 'Certificado de Prácticas y Pasantías Institucionales', 'Trámite para obtener un certificado de prácticas y pasantías institucionales.', 12000,'http://certificadopracticas.pdf');
 
 -- Certificado oficial de notas
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (14, 1, 14, 'Certificado Oficial de Notas', 'Trámite para obtener un certificado oficial de notas.', 9000);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (14, 1, 'Certificado Oficial de Notas', 'Trámite para obtener un certificado oficial de notas.', 9000,'http://certificadonotas.pdf');
 
 -- Solicitud de contenidos programáticos
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (15, 1, 15, 'Solicitud de Contenidos Programáticos', 'Trámite para solicitar contenidos programáticos de cursos y asignaturas.', 8000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (15, 1,  'Solicitud de Contenidos Programáticos', 'Trámite para solicitar contenidos programáticos de cursos y asignaturas.', 8000,'http://solicitudcontenidos.pdf');
 
 -- Solicitud de cancelación de semestre
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (16, 1, 16, 'Solicitud de Cancelación de Semestre', 'Trámite para solicitar la cancelación de un semestre.', 7500);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (16, 1, 'Solicitud de Cancelación de Semestre', 'Trámite para solicitar la cancelación de un semestre.', 7500,'http://solicitudcancelacionsemestre.pdf');
 
 -- Solicitud de cancelación de materias
 
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (17, 1, 17, 'Solicitud de Cancelación de Materias', 'Trámite para solicitar la cancelación de materias inscritas.', 8500);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (17, 1, 'Solicitud de Cancelación de Materias', 'Trámite para solicitar la cancelación de materias inscritas.', 8500,'http://solicitudcancelacionmaterias.pdf');
+
+
+
+-- Acta de Grado
+INSERT INTO Normativa (idTramite, descripcionNormativa, esVigente)
+VALUES 
+('1', 'Normativa que establece los requisitos y procedimientos para la obtención del Acta de Grado.', 1),
+(1,'Normativa que establece Documentos Solicitados para un acta de grado',1),
+('2', 'Normativa que regula el proceso para solicitar una extensión de créditos académicos.', 1),
+('3', 'Normativa que establece los procedimientos para la actualización del documento de identidad de los estudiantes.', 1),
+('4', 'Normativa que regula el proceso de actualización de datos personales de los estudiantes.', 1),
+('5', 'Normativa que establece los procedimientos para realizar modificaciones en la matrícula académica.', 1),
+('6', 'Normativa que regula el proceso para solicitar documentos académicos como certificados y constancias.', 1),
+('7', 'Normativa que establece los requisitos y procedimientos para solicitar participar en el programa de intercambio estudiantil MOVE.', 1),
+('8', 'Normativa que regula el proceso para solicitar servicios de apoyo estudiantil ofrecidos por la universidad.', 1),
+('9', 'Normativa que establece los procedimientos para solicitar modificaciones en el horario de clases.', 1),
+('10', 'Normativa que regula el proceso para obtener un certificado de matrícula.', 1),
+('11', 'Normativa que establece los procedimientos para solicitar un certificado laboral.', 1),
+('12', 'Normativa que regula el proceso para obtener un certificado de publicaciones académicas.', 1),
+('13', 'Normativa que establece los procedimientos para obtener un certificado de prácticas y pasantías institucionales.', 1),
+('14', 'Normativa que regula el proceso para obtener un certificado oficial de notas.', 1),
+('15', 'Normativa que establece los procedimientos para solicitar contenidos programáticos de cursos y asignaturas.', 1),
+('16', 'Normativa que regula el proceso para solicitar la cancelación de un semestre.', 1),
+('17', 'Normativa que establece los procedimientos para solicitar la cancelación de materias inscritas.', 1);
 
 
 -- USUARIOS:
@@ -282,15 +240,14 @@ INSERT INTO solicitud (idUsuario,idFuncionario,idTramite)  VALUES (18,5,12),
 
 UPDATE solicitud SET estado='en proceso' WHERE idUsuario IN(18,19,4,12);
 
-
-INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion)
-VALUES(16,'Pagado',current_date(),current_date()+1,current_date()),
-(17,'Pagado',current_date(),current_date()+3,current_date()+1 ),
-(18,'Pagado',current_date(),current_date()+4,current_date()+2),
-(19,'Pagado',current_date(),current_date()+5,current_date()+1),
-(20,'Pagado',current_date(),current_date()+6,current_date()+3),
-(21,'Pagado',current_date(),current_date()+7,current_date()+5),
-(22,'Pagado',current_date(),current_date()+8,current_date()+1);
+INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
+VALUES(16,'Pagado',current_date(),current_date()+1,current_date(),105000),
+(17,'Pagado',current_date(),current_date()+3,current_date()+1,105000 ),
+(18,'Pagado',current_date(),current_date()+4,current_date()+2,105000),
+(19,'Pagado',current_date(),current_date()+5,current_date()+1,0),
+(20,'Pagado',current_date(),current_date()+6,current_date()+3,98530),
+(21,'Pagado',current_date(),current_date()+7,current_date()+5,105000),
+(22,'Pagado',current_date(),current_date()+8,current_date()+1,101201);
 
 -- Insertar pagos en solicitudes seleccionadas
 INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
@@ -305,9 +262,11 @@ VALUES (8, 'Por Pagar', current_date()-1, current_date, 2500,NULL);
 INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
 VALUES (10, 'Por Pagar', current_date()-1, current_date, 3000,NULL);
 INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
-VALUES (12, 'Pagado',current_date()-2, current_date()+10,null,'2024-04-24'),
-(14, 'Pagado', current_date()+5, current_date()+12,null,'2024-04-25');
+VALUES (12, 'Pagado',current_date()-2, current_date()+10,56000,'2024-04-24'),
+(14, 'Pagado', current_date()+5, current_date()+12,98500,'2024-04-25');
 
 UPDATE pago SET fechaLimite=fechaLimite+1 WHERE idSolicitud=4;
 UPDATE pago SET fechaLimite=fechaLimite+3 WHERE idSolicitud=8;
 UPDATE pago SET fechaLimite=fechaLimite+2 WHERE idSolicitud=10;
+
+UPDATE solicitud set estado='completado' where idSolicitud IN(18,19,20,21);

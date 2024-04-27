@@ -1,16 +1,7 @@
-DROP DATABASE IF EXISTS proyecto;
-CREATE DATABASE proyecto;
-USE proyecto;
+DROP DATABASE IF EXISTS PROYECTO;
+CREATE DATABASE PROYECTO;
+USE PROYECTO;
 
--- Normativa
-CREATE TABLE Normativa (
-			idNormativa int NOT NULL AUTO_INCREMENT,
-			linkPlantilla TEXT NOT NULL,
-			descripcionNormativa MEDIUMTEXT NOT NULL,
-			fecha DATETIME NOT NULL DEFAULT NOW(),
-			esVigente BOOLEAN NOT NULL,
-			PRIMARY KEY (idNormativa)
-			);
 -- Unidad
 CREATE TABLE Unidad (
 			  idUnidad int NOT NULL AUTO_INCREMENT,
@@ -19,24 +10,38 @@ CREATE TABLE Unidad (
 			  correo varchar(100) NOT NULL,
 	
 			  PRIMARY KEY (idUnidad)
-                      );
+			  );
+ALTER TABLE unidad ADD CONSTRAINT checkExtension CHECK(extension<100000);
+ALTER TABLE unidad ADD CONSTRAINT checkCorreoUnidad CHECK(correo LIKE '%@%');
+
 
 -- Tramite
-CREATE TABLE `tramite` (
-			`idTramite` int NOT NULL AUTO_INCREMENT,
-			`idUnidad` int NOT NULL,
-			`idNormativa` int NOT NULL,
-			`nombre` varchar(200) NOT NULL,
-			`descripcion` TEXT NOT NULL,
-			`costo` decimal(12,2) DEFAULT NULL,
-			PRIMARY KEY (`idTramite`),
-			KEY `idUnidad` (`idUnidad`),
-			KEY `idNormativa` (`idNormativa`),
-			CONSTRAINT `tramite_ibfk_1` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`),
-			CONSTRAINT `tramite_ibfk_2` FOREIGN KEY (`idNormativa`) REFERENCES `normativa` (`idNormativa`)
-);
+CREATE TABLE Tramite (
+			idTramite int NOT NULL AUTO_INCREMENT,
+			idUnidad int NOT NULL,
+			linkPlantilla TEXT NOT NULL,
+			nombre varchar(200) NOT NULL,
+			descripcion TEXT NOT NULL,
+			costo decimal(12,2) DEFAULT NULL,
+            
+			PRIMARY KEY (idTramite),
+            FOREIGN KEY(idUnidad) REFERENCES unidad(idunidad))
+            ;
 
--- Usuario
+ALTER TABLE Tramite ADD CONSTRAINT revisarCOsto CHECK (costo>=0);    
+-- Normativa
+CREATE TABLE Normativa (
+			idNormativa int NOT NULL AUTO_INCREMENT,
+            idTramite INT NOT NULL,
+			descripcionNormativa MEDIUMTEXT NOT NULL,
+			fecha DATETIME NOT NULL DEFAULT NOW(),
+			esVigente BOOLEAN NOT NULL,
+            
+			PRIMARY KEY (idNormativa),
+            FOREIGN KEY(idTRamite) REFERENCES tramite (idTramite)
+			);
+
+
 CREATE TABLE Usuario 	(
 			idUsuario INT NOT NULL AUTO_INCREMENT,
 			identificacion INT NOT NULL,
@@ -50,6 +55,8 @@ CREATE TABLE Usuario 	(
 			PRIMARY KEY(idUsuario),
 			UNIQUE(identificacion,tipo)
 			);
+
+ALTER TABLE Usuario ADD CONSTRAINT checkCorreoUsu CHECK(correoElectronico LIKE '%@%');
 
 -- Solicitud
 CREATE TABLE Solicitud (
@@ -70,29 +77,35 @@ CREATE TABLE Solicitud (
 CREATE TABLE Documento (
 			idDocumento INT NOT NULL AUTO_INCREMENT,
 			idSolicitud INT NOT NULL,
-                        tipoDocumento ENUM('ReciboDePago','Operacion','Solicitado') NOT NULL,
-                        tituloDocumento VARCHAR(100) NOT NULL,
-                        linkDocumento TEXT NOT NULL,
+			tipoDocumento ENUM('ReciboDePago','Operacion','Solicitado') NOT NULL,
+			tituloDocumento VARCHAR(100) NOT NULL,
+			linkDocumento TEXT NOT NULL,
 			estadoDocumento ENUM('activo','inactivo') NOT NULL,
 
-	
-                        PRIMARY KEY(idDocumento),
-                        FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud)
+
+			PRIMARY KEY(idDocumento),
+			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud)
                         );
-                        
+-- CONSTRAINTS                    
 -- Pago:
 CREATE TABLE Pago (
 			idPago INT NOT NULL AUTO_INCREMENT,
 			idSolicitud INT NOT NULL,
-                        estadoDePago ENUM('Pagado','Por Pagar') NOT NULL,
-                        fechaInicio DATE NOT NULL,
-                        fechaLimite DATE NOT NULL,
-                        monto DECIMAL(12,2) NOT NULL,
-                        
-                        PRIMARY KEY(idPago),
-                        FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud)
+			estadoDePago ENUM('Pagado','Por Pagar') NOT NULL,
+			fechaInicio DATE NOT NULL,
+			fechaLimite DATE NOT NULL,
+			fechaDeCancelacion DATE NULL,
+			monto DECIMAL(12,2) NOT NULL,
+			
+			PRIMARY KEY(idPago),
+			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud)
                         );
                         
+ALTER TABLE PAGO ADD CONSTRAINT revisarFechas CHECK (fechaInicio<=FechaLimite);   
+ALTER TABLE PAGO ADD CONSTRAINT revisarMonto CHECK (MONTO>=0);    
+
+-- fechaDeCancelacion se maneja desde un trigger, no desde un constraint.
+
 -- Comentario:
 CREATE TABLE Comentario(
 			idComentario INT NOT NULL AUTO_INCREMENT,
@@ -105,423 +118,15 @@ CREATE TABLE Comentario(
 			PRIMARY KEY(idComentario),
 			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud),
 			FOREIGN KEY (idUsuario) REFERENCES usuario(idUsuario),
-			FOREIGN KEY (comentarioAnterior) REFERENCES comentario(idComentario)
-                        );
--- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- 																									TRIGGERS          
--- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Triggers en solicitud
-
--- TRIGGERS QUE HACE QUE EXISTA LA RELACIÓN 1 A 1 EN LA TABLA USUARIO Y PAGO
-
-
-DROP TRIGGER IF EXISTS relacionUnoAUnoPagoINS;
-
-DELIMITER // 
-CREATE TRIGGER relacionUnoAUnoPagoINS BEFORE INSERT ON pago
-FOR EACH ROW
-BEGIN
-	IF NEW.idSolicitud IN (SELECT idSolicitud FROM pago) THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede insertar un nuevo pago puesto que ya existe un Pago Activo para esta Solicitud';
-	END IF;
-END
-// DELIMITER ; 
-
-DROP TRIGGER IF EXISTS relacionUnoAUnoPagoUPD;
-
-DELIMITER // 
-CREATE TRIGGER relacionUnoAUnoPagoUPD BEFORE UPDATE ON pago
-FOR EACH ROW
-BEGIN
-	IF NEW.idSolicitud IN (SELECT idSolicitud FROM pago) THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede insertar un nuevo pago puesto que ya existe un Pago Activo para esta Solicitud';
-	END IF;
-END
-// DELIMITER ; 
-
--- Trigger que hace que no se inserte un nombre diferente al de una cédula, ejemplo: Si inserto una cédula "1110289035" no puedo tener dos registros con 
--- Alguien que se llame Sergio y luego que se llame Juan David, tiene que tener consistencia esa identificación!
-
-drop trigger if exists verificar_ident_Usuario;
-DELIMITER //
-CREATE TRIGGER verificar_ident_Usuario BEFORE INSERT ON usuario
-FOR EACH ROW
-BEGIN
-	DECLARE elNombre VARCHAR(50);
-    DECLARE elApellido VARCHAR(50);
-    
-    IF NEW.identificacion IN (SELECT DISTINCT(identificacion) from usuario) THEN 
-		SELECT DISTINCT(nombre) INTO elNombre FROM usuario WHERE identificacion=NEW.identificacion;
-		SELECT DISTINCT(apellido) INTO elApellido FROM usuario WHERE identificacion=NEW.identificacion;
-        IF elNombre != NEW.nombre OR elApellido != NEW.apellido AND elApellido IS NOT NULL AND elNombre IS NOT NULL THEN
-			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR, EL USUARIO DEBE DE TENER EL MISMO NOMBRE Y APELLIDO PARA ESTA IDENTIFICACIÓN';
-		END IF;
-	END IF;
-	END
-// DELIMITER ; 
-
--- Apenas se inserte un nuevo funcionario, verificará si este es de tipo 'Administrador' en la tabla Usuario
-DROP TRIGGER IF EXISTS verificar_funcionario_administrador_insert;
-
-DELIMITER //
-CREATE TRIGGER verificar_funcionario_administrador_insert BEFORE INSERT ON solicitud
-FOR EACH ROW
-BEGIN
-	DECLARE tipoUsuario VARCHAR(50);
-		
-	SELECT tipo INTO tipoUsuario
-	FROM usuario
-	WHERE idUsuario = NEW.idFuncionario;
-		
-	IF tipoUsuario != 'Administrativo' THEN
-		SIGNAL SQLSTATE '45000'
-		SET MESSAGE_TEXT = 'El usuario asignado como funcionario no es un Administrativo';
-	END IF;
-END //
- 
-DELIMITER ;
-
-
--- Apenas se Actualice un nuevo funcionario, verificará si este es de tipo 'Administrador' en la tabla Usuario
-DROP TRIGGER IF EXISTS verificar_funcionario_administrador_UPDATE;
-
-DELIMITER //
-CREATE TRIGGER verificar_funcionario_administrador_update BEFORE UPDATE ON solicitud
-FOR EACH ROW
-BEGIN
-	DECLARE tipoUsuario VARCHAR(50);
-		
-	SELECT tipo INTO tipoUsuario
-	FROM usuario
-	WHERE idUsuario = NEW.idFuncionario;
-		
-	IF tipoUsuario != 'Administrativo' THEN
-		SIGNAL SQLSTATE '45000'
-		SET MESSAGE_TEXT = 'El usuario asignado como funcionario no es un Administrativo';
-	END IF;
-END //
-DELIMITER ;
-
--- TRIGGERS PARA CAMBIAR EL MONTO DEL PAGO DE DE UN DOCUMENTO 'TRAMITADO'
-
-
-DROP trigger IF EXISTS INSERT_MONTO_SDOC_SOLICITADO;
-	
-DELIMITER //
-CREATE TRIGGER INSERT_MONTO_SDOC_SOLICITADO BEFORE INSERT ON pago
-FOR EACH ROW 
-BEGIN
-	DECLARE id INT;
-    SET id = NEW.idSolicitud;
-    
-    IF id IN(SELECT idSolicitud FROM solicitud) THEN 
-		SET NEW.monto=(SELECT costo FROM tramite JOIN solicitud USING(idTramite) WHERE idSolicitud=id);
-	else
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La solicitud no existe';
-    END IF;
-    
-END //
-DELIMITER ;
-
--- TRIGGERS PARA QUE CUANDO SE INSERTE EL DOCUMENTO SOLICITADO CAMBIE EL ESTADO DE LA SOLICITUD.
-
-DROP TRIGGER IF EXISTS insert_doc_solicitado;
-DELIMITER //
-CREATE TRIGGER insert_doc_solicitado BEFORE INSERT on documento
-FOR EACH ROW
-	BEGIN
-		DECLARE Id INT;
-		SET id = NEW.idSolicitud;
-
-		IF NEW.tipoDocumento = 'Solicitado' THEN
-			UPDATE solicitud SET estado = 'completado' WHERE idSolicitud = id;
-		END IF;
-	END //
-DELIMITER ; 
-
--- 	Lo mismo pero para un UPDATE
-DROP TRIGGER IF EXISTS update_doc_solicitado;
-DELIMITER 
-CREATE TRIGGER update_doc_solicitado BEFORE UPDATE on documento
-FOR EACH ROW
-	BEGIN
-		DECLARE Id INT;
-		SET id = NEW.idSolicitud;
-
-		IF NEW.tipoDocumento = 'Solicitado' THEN
-			UPDATE solicitud SET estado = 'completado' WHERE idSolicitud = id;
-		END IF;
-	END //
-DELIMITER ; 
-
--- TRIGGER PARA CAMBIAR EL ESTADO DE LA SOLICITUD SI SE PASÓ DE LA FECHA LÍMITE.
-
-DROP TRIGGER IF EXISTS update_estado_limite_fecha;
-
-DELIMITER //
-CREATE TRIGGER update_estado_limite_fecha BEFORE UPDATE on pago
-FOR EACH ROW
-
-BEGIN
-
-	DECLARE id INT;
-	SET id = OLD.idSolicitud;
-
-	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='en proceso' THEN
-		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud;
-    END IF;
-END // 
-DELIMITER ; 
-
--- TRIGGER que NO permite que se agreguen más comentarios luego de que se cerró la solicitud.
-
-DROP TRIGGER IF EXISTS estadoSolicitud_en_comentario;
-
-DELIMITER //
-CREATE TRIGGER estadoSolicitud_en_comentario BEFORE INSERT ON comentario
-FOR EACH ROW
-BEGIN
-	DECLARE laId INT;
-	SET laId = New.idSolicitud;
-	IF getEstadoSolicitud(laId)='cerrado' THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='ERROR, LA SOLICITUD ESTÁ CERRADA';
-	END IF;
-END // 
-DELIMITER ;
-
--- TRIGGER QUE VERIFICA SI YA EXISTE UN DOCUMENTO DE RECIBO DE PAGO ACTIVO.
-DROP TRIGGER IF EXISTS verificar_reciboDePago;
-DELIMITER //
-
-CREATE TRIGGER verificar_reciboDePago BEFORE INSERT ON documento
-FOR EACH ROW
-
-BEGIN
-	DECLARE laID INT;
-    DECLARE cant INT;
-	SET laId = NEW.idSOLICITUD;
-                
-    SET cant = (
-SELECT COUNT(*) FROM documento WHERE idSolicitud= laID and ESTADOdocumento='Activo' and tipoDocumento='ReciboDePago');
-
-		IF new.tipoDocumento ='reciboDePago' AND cant=1 THEN
-
-				SIGNAL SQLSTATE '45000' 
-				SET MESSAGE_TEXT='ERROR, YA EXISTE UN RECIBO DE PAGO ACTIVO, DEBE DESACTIVARLO ANTES DE INSERTAR UN RECIBO DE PAGO';
-		END IF;
-END //
-
-DELIMITER ;
-
--- TRIGGER QUE VERIFICA SI EL idUsuario y el idFuncionario son IGUALES.
-
-DROP TRIGGER IF EXISTS verificarUsuarioYFuncionario;
-
-DELIMITER // 
-CREATE TRIGGER verificarUsuarioYFuncionario BEFORE INSERT ON solicitud
-FOR EACH ROW
-BEGIN
-	IF new.idUsuario=new.idFuncionario THEN 
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: NO PUEDE INGRESARSE UN MISMO USUARIO Y FUNCIONARIO';
-	END IF;
-END;
-// DELIMITER ;  
-
-
--- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- 																									FUNCTIONS          
--- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
--- FUNCIÓN para obtener el ESTADO de la Solicitud
-
-DROP FUNCTION IF EXISTS getEstadoSolicitud;
-
-DELIMITER //
-CREATE FUNCTION getEstadoSolicitud(laID INT) RETURNS VARCHAR(50) 
-READS SQL DATA 
-BEGIN
-	declare res VARCHAR(50);
-
-	SELECT estado INTO res FROM solicitud WHERE idSolicitud=laID;
-
-	RETURN res;
-END //
-DELIMITER ; 
-
--- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- 																									PROCEDURES          
--- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
--- Procedimientos para llamar a tablas:
-DROP PROCEDURE IF EXISTS u;
-DELIMITER // 
-CREATE PROCEDURE u()
-SELECT * FROM usuario;
-// DELIMITER ; 
-
-
-DROP PROCEDURE IF EXISTS s;
-DELIMITER // 
-CREATE PROCEDURE s()
-SELECT * FROM solicitud;
-// DELIMITER ; 
-
-
-DROP PROCEDURE IF EXISTS t;
-DELIMITER // 
-CREATE PROCEDURE t()
-SELECT * FROM tramite;
-// DELIMITER ; 
-
-
-DROP PROCEDURE IF EXISTS c;
-DELIMITER // 
-CREATE PROCEDURE c()
-SELECT * FROM comentario;
-// DELIMITER ; 
-
-
-DROP PROCEDURE IF EXISTS n;
-DELIMITER // 
-CREATE PROCEDURE n()
-SELECT * FROM normativa;
-// DELIMITER ; 
-
-DROP PROCEDURE IF EXISTS p;
-DELIMITER // 
-CREATE PROCEDURE p()
-SELECT * FROM pago;
-// DELIMITER ; 
-
-DROP PROCEDURE IF EXISTS d;
-DELIMITER // 
-CREATE PROCEDURE d()
-SELECT * FROM documento;
-// DELIMITER ; 
-
-
--- Seleccionar pago por ID de la solicitud
-DROP procedure if exists estadoDePago;
-DELIMITER // 
-	CREATE PROCEDURE estadoDePago (in elID INT)
-	BEGIN
-	SELECT elId, idSolicitud, estadoDePago FROM pago WHERE idSolicitud=elID;
-	END;
-// DELIMITER ;                                      
-
--- Cambiar el estado de un determinado Documento:
-DROP PROCEDURE IF EXISTS cambiarEstadoDocumento;
-
-DELIMITER // 
-CREATE PROCEDURE cambiarEstadoDocumento(IN idDoc INT) 
-BEGIN
-	DECLARE elEstado VARCHAR(50);
-    SELECT estadoDocumento INTO elEstado FROM documento WHERE idDocumento=idDoc;
-    
-    IF elEstado='activo' THEN
-		SET elEstado='inactivo';
-	ELSE
-		SET elEstado='activo';
-	END IF;    
-    
-    UPDATE documento SET estadoDocumento = elEstado WHERE idDocumento=idDoc;
-	SELECT CONCAT('Nuevo Estado: ',elEstado,'. Documento con ID: ',idDoc) AS 'Nuevo Mensaje';
-END
-// DELIMITER ;
-
--- Revisa los Recibos De Pago Activos de una SOLICITUD:
-DROP PROCEDURE IF EXISTS reciboActivo;
-
-DELIMITER // 
-CREATE PROCEDURE reciboActivo(IN idSOLI INT)
-BEGIN
-	DECLARE cant INT;
-	SELECT COUNT(*) INTO cant FROM documento where idSolicitud=idSOLI AND tipoDocumento = 'ReciboDePago' AND estadoDocumento='activo';
-    
-    IF cant=1 THEN
-		SELECT * FROM documento where idSolicitud=idSOLI AND tipoDocumento = 'ReciboDePago' AND estadoDocumento='activo';
-    	ELSE 
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = ' NO HAY RECIBOS DE PAGO ACTIVOS';
-	END IF;
-    
-    END
-// DELIMITER ; 
-
+			FOREIGN KEY (comentarioAnterior) REFERENCES comentario(idComentario));
+            
+            
 
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 -- 																									INSERTS          
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
--- Acta de Grado
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://actadegrado.pdf', 'Normativa que establece los requisitos y procedimientos para la obtención del Acta de Grado.', 1);
-
--- Extensión de Créditos
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://extensiondecreditos.pdf', 'Normativa que regula el proceso para solicitar una extensión de créditos académicos.', 1);
-
--- Actualización de Documento de Identidad
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://actualizaciondocumento.pdf', 'Normativa que establece los procedimientos para la actualización del documento de identidad de los estudiantes.', 1);
-
--- Actualización de Datos Personales
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://actualizaciondatos.pdf', 'Normativa que regula el proceso de actualización de datos personales de los estudiantes.', 1);
-
--- Modificación de Matrícula Académica
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://modificacionmatricula.pdf', 'Normativa que establece los procedimientos para realizar modificaciones en la matrícula académica.', 1);
-
--- Solicitud de Documento Académico
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicituddocumento.pdf', 'Normativa que regula el proceso para solicitar documentos académicos como certificados y constancias.', 1);
-
--- Solicitud de Intercambio MOVE
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudintercambio.pdf', 'Normativa que establece los requisitos y procedimientos para solicitar participar en el programa de intercambio estudiantil MOVE.', 1);
-
--- Solicitud de Servicios de Apoyo Estudiantil
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudapoyo.pdf', 'Normativa que regula el proceso para solicitar servicios de apoyo estudiantil ofrecidos por la universidad.', 1);
-
--- Modificación de Horario
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://modificacionhorario.pdf', 'Normativa que establece los procedimientos para solicitar modificaciones en el horario de clases.', 1);
-
--- Certificado de Matrícula
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadomatricula.pdf', 'Normativa que regula el proceso para obtener un certificado de matrícula.', 1);
-
--- Certificado Laboral
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadolaboral.pdf', 'Normativa que establece los procedimientos para solicitar un certificado laboral.', 1);
-
--- Certificado de Publicaciones
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadopublicaciones.pdf', 'Normativa que regula el proceso para obtener un certificado de publicaciones académicas.', 1);
-
--- Certificado de Prácticas y Pasantías Institucionales
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadopracticas.pdf', 'Normativa que establece los procedimientos para obtener un certificado de prácticas y pasantías institucionales.', 1);
-
--- Certificado Oficial de Notas
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://certificadonotas.pdf', 'Normativa que regula el proceso para obtener un certificado oficial de notas.', 1);
-
--- Solicitud de Contenidos Programáticos
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudcontenidos.pdf', 'Normativa que establece los procedimientos para solicitar contenidos programáticos de cursos y asignaturas.', 1);
-
--- Solicitud de Cancelación de Semestre
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudcancelacionsemestre.pdf', 'Normativa que regula el proceso para solicitar la cancelación de un semestre.', 1);
-
--- Solicitud de Cancelación de Materias
-INSERT INTO Normativa (linkPlantilla, descripcionNormativa, esVigente)
-VALUES ('http://solicitudcancelacionmaterias.pdf', 'Normativa que establece los procedimientos para solicitar la cancelación de materias inscritas.', 1);
-
 
 -- UNIDADES:
-
 
 -- Registro Académico
 INSERT INTO Unidad (nombreUnidad, extension, correo)
@@ -551,83 +156,103 @@ VALUES ('Departamento de Investigación', 12350, 'investigacion@universidad.edu'
 INSERT INTO Unidad (nombreUnidad, extension, correo)
 VALUES ('Departamento de Prácticas Profesionales', 12351, 'practicasprofesionales@universidad.edu');
 
-
-
 -- TRÁMITES
 
 -- Acta de Grado
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (1, 2, 1, 'Acta de Grado', 'Trámite para solicitar la expedición del Acta de Grado.', 10000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (1, 2,  'Acta de Grado', 'Trámite para solicitar la expedición del Acta de Grado.', 10000,'http://actadegrado.pdf');
 
 -- Extensión de Créditos
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (2, 1, 2, 'Extensión de Créditos', 'Trámite para solicitar una extensión de créditos académicos.', 12000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (2, 1,  'Extensión de Créditos', 'Trámite para solicitar una extensión de créditos académicos.', 12000,'http://extensiondecreditos.pdf');
 
 -- Actualización de Documento de Identidad
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (3, 1, 3, 'Actualización de Documento de Identidad', 'Trámite para actualizar el documento de identidad.', 15000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (3, 1, 'Actualización de Documento de Identidad', 'Trámite para actualizar el documento de identidad.', 15000,'http://actualizaciondocumento.pdf');
 
 -- Actualización de Datos personales
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (4, 1, 4, 'Actualización de Datos Personales', 'Trámite para actualizar los datos personales del estudiante.', 8000);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (4, 1,  'Actualización de Datos Personales', 'Trámite para actualizar los datos personales del estudiante.', 8000,'http://actualizaciondatos.pdf');
 
 -- Modificación de Matrícula Académica
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (5, 1, 5, 'Modificación de Matrícula Académica', 'Trámite para modificar la matrícula académica del estudiante.', 9000);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (5, 1,  'Modificación de Matrícula Académica', 'Trámite para modificar la matrícula académica del estudiante.', 9000,'http://modificacionmatricula.pdf');
 
 -- Solicitud de Documento Académico
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (6, 1, 6, 'Solicitud de Documento Académico', 'Trámite para solicitar documentos académicos como certificados y constancias.', 7000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (6, 1,  'Solicitud de Documento Académico', 'Trámite para solicitar documentos académicos como certificados y constancias.', 7000,'http://solicituddocumento.pdf');
 
 -- Solicitud de Intercambio MOVE
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (7, 4, 7, 'Solicitud de Intercambio MOVE', 'Trámite para solicitar participación en el programa de intercambio estudiantil MOVE.', 11000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (7, 4,  'Solicitud de Intercambio MOVE', 'Trámite para solicitar participación en el programa de intercambio estudiantil MOVE.', 11000,'http://solicitudintercambio.pdf');
 
 -- Solicitud de Servicios de Apoyo estudiantil
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (8, 5, 8, 'Solicitud de Servicios de Apoyo Estudiantil', 'Trámite para solicitar servicios de apoyo estudiantil.', 13000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (8, 5,  'Solicitud de Servicios de Apoyo Estudiantil', 'Trámite para solicitar servicios de apoyo estudiantil.', 13000,'http://solicitudapoyo.pdf');
 
 -- Modificación de horario
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (9, 1, 9, 'Modificación de Horario', 'Trámite para solicitar modificaciones en el horario de clases.', 10000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (9, 1,  'Modificación de Horario', 'Trámite para solicitar modificaciones en el horario de clases.', 10000,'http://modificacionhorario.pdf');
 
 -- Certificado de Matrícula
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (10, 1, 10, 'Certificado de Matrícula', 'Trámite para obtener un certificado de matrícula.', 8500);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (10, 1,  'Certificado de Matrícula', 'Trámite para obtener un certificado de matrícula.', 8500,'http://certificadomatricula.pdf');
 
 -- Certificado Laboral
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (11, 3, 11, 'Certificado Laboral', 'Trámite para solicitar un certificado laboral.', 9500);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (11, 3, 'Certificado Laboral', 'Trámite para solicitar un certificado laboral.', 9500,'http://certificadolaboral.pdf');
 
 -- Certificado de publicaciones
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (12, 6, 12, 'Certificado de Publicaciones', 'Trámite para obtener un certificado de publicaciones académicas.', 11000);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (12, 6, 'Certificado de Publicaciones', 'Trámite para obtener un certificado de publicaciones académicas.', 11000,'http://certificadopublicaciones.pdf');
 
 -- Certificado de prácticas y pasantías institucionales
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (13, 7, 13, 'Certificado de Prácticas y Pasantías Institucionales', 'Trámite para obtener un certificado de prácticas y pasantías institucionales.', 12000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (13, 7, 'Certificado de Prácticas y Pasantías Institucionales', 'Trámite para obtener un certificado de prácticas y pasantías institucionales.', 12000,'http://certificadopracticas.pdf');
 
 -- Certificado oficial de notas
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (14, 1, 14, 'Certificado Oficial de Notas', 'Trámite para obtener un certificado oficial de notas.', 9000);
+INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
+VALUES (14, 1, 'Certificado Oficial de Notas', 'Trámite para obtener un certificado oficial de notas.', 9000,'http://certificadonotas.pdf');
 
 -- Solicitud de contenidos programáticos
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (15, 1, 15, 'Solicitud de Contenidos Programáticos', 'Trámite para solicitar contenidos programáticos de cursos y asignaturas.', 8000);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (15, 1,  'Solicitud de Contenidos Programáticos', 'Trámite para solicitar contenidos programáticos de cursos y asignaturas.', 8000,'http://solicitudcontenidos.pdf');
 
 -- Solicitud de cancelación de semestre
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (16, 1, 16, 'Solicitud de Cancelación de Semestre', 'Trámite para solicitar la cancelación de un semestre.', 7500);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (16, 1, 'Solicitud de Cancelación de Semestre', 'Trámite para solicitar la cancelación de un semestre.', 7500,'http://solicitudcancelacionsemestre.pdf');
 
 -- Solicitud de cancelación de materias
 
-INSERT INTO tramite (idTramite, idUnidad, idNormativa, nombre, descripcion, costo)
-VALUES (17, 1, 17, 'Solicitud de Cancelación de Materias', 'Trámite para solicitar la cancelación de materias inscritas.', 8500);
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
+VALUES (17, 1, 'Solicitud de Cancelación de Materias', 'Trámite para solicitar la cancelación de materias inscritas.', 8500,'http://solicitudcancelacionmaterias.pdf');
+
+
+
+-- Acta de Grado
+INSERT INTO Normativa (idTramite, descripcionNormativa, esVigente)
+VALUES 
+('1', 'Normativa que establece los requisitos y procedimientos para la obtención del Acta de Grado.', 1),
+(1,'Normativa que establece Documentos Solicitados para un acta de grado',1),
+('2', 'Normativa que regula el proceso para solicitar una extensión de créditos académicos.', 1),
+('3', 'Normativa que establece los procedimientos para la actualización del documento de identidad de los estudiantes.', 1),
+('4', 'Normativa que regula el proceso de actualización de datos personales de los estudiantes.', 1),
+('5', 'Normativa que establece los procedimientos para realizar modificaciones en la matrícula académica.', 1),
+('6', 'Normativa que regula el proceso para solicitar documentos académicos como certificados y constancias.', 1),
+('7', 'Normativa que establece los requisitos y procedimientos para solicitar participar en el programa de intercambio estudiantil MOVE.', 1),
+('8', 'Normativa que regula el proceso para solicitar servicios de apoyo estudiantil ofrecidos por la universidad.', 1),
+('9', 'Normativa que establece los procedimientos para solicitar modificaciones en el horario de clases.', 1),
+('10', 'Normativa que regula el proceso para obtener un certificado de matrícula.', 1),
+('11', 'Normativa que establece los procedimientos para solicitar un certificado laboral.', 1),
+('12', 'Normativa que regula el proceso para obtener un certificado de publicaciones académicas.', 1),
+('13', 'Normativa que establece los procedimientos para obtener un certificado de prácticas y pasantías institucionales.', 1),
+('14', 'Normativa que regula el proceso para obtener un certificado oficial de notas.', 1),
+('15', 'Normativa que establece los procedimientos para solicitar contenidos programáticos de cursos y asignaturas.', 1),
+('16', 'Normativa que regula el proceso para solicitar la cancelación de un semestre.', 1),
+('17', 'Normativa que establece los procedimientos para solicitar la cancelación de materias inscritas.', 1);
 
 
 -- USUARIOS:
-
-
 
 INSERT INTO Usuario (sexo, identificacion, tipo, nombre, apellido, correoElectronico, telefono)
 VALUES 
@@ -658,16 +283,108 @@ VALUES
 -- 
 
 -- SOLICITUD:
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite)
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite,fechaInicio)
 VALUES 
-(6, 1, 17),
-(22, 2, 17),
-(3, 4, 3),
-(6, 5, 4),
-(2, 5, 5),
-(6, 4, 17),
-(7, 3, 17),
-(6, 2, 8),
-(16, 1, 16),
-(13, 1, 10);
+(6, 1, 17,current_date()-4),
+(22, 2, 17,current_date()-4),
+(3, 4, 3,current_date()-4),
+(6, 5, 4,current_date()-4),
+(2, 5, 5,current_date()-4),
+(6, 4, 17,current_date()-4),
+(7, 3, 17,current_date()-4),
+(6, 2, 8,current_date()-4),
+(16, 1, 16,current_date()-4),
+(13, 1, 10,current_date()-4),
+(14,4,16,current_date()-4),
+(12,5,6,current_date()-4),
+(10,3,2,current_date()-4),
+(9,2,16,current_date()-4),
+(4,5,2,current_date()-4);
 
+-- DESCOMENTAR PARA ACTUALIZAR LOS IDS IMPARES
+-- UPDATE solicitud set estado='en proceso' where idSolicitud%2!=0;
+UPDATE solicitud set estado='en proceso' where idSolicitud%2=0;
+
+
+-- PROBAR QUE PASA SI SE EJECUTA 
+ -- INSERT INTO PAGO(idSolicitud,fechaInicio,fechaLimite) VALUES(1,current_date(),current_date()+1);
+
+INSERT INTO comentario (idComentario,idSolicitud,idUsuario,mensaje,comentarioAnterior)
+VALUES (1,3,3,'Hola',NULL),
+(2,3,4,'Hola Usuario, cómo estás???',1),
+(3,3,4,'Necesito tu cédula por favor',2),
+(4,3,3,'Bien y tú?',1),
+(5,3,3,'http://lacedula.com',4),
+(6,4,6,'Hola',NULL),
+(7,4,5,'Hola Usuario, cómo estás???',6),
+(8,4,5,'Necesito tu cédula por favor',7),
+(9,4,6,'Bien y tú?',6),
+(10,4,6,'http://lacedula.com',9)
+,(11,14,9,'Hola',NULL),
+(12,14,2,'Hola Usuario, cómo estás???',11),
+(13,14,2,'Necesito tu cédula por favor',12),
+(14,14,9,'Bien y tú?',12),
+(15,14,9,'http://lacedula.com',14);
+
+-- DOCUMENTOS : 
+
+
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
+VALUES 
+(15, 'ReciboDePago', 'Recibo de Pago', 'link1', 'inactivo'),
+(15, 'Operacion', 'CEDULA', 'link2', 'activo'),
+(15, 'Operacion', 'Derechos', 'link6', 'activo'),
+(15, 'ReciboDePago', 'Recibo de Pago 2', 'link7', 'activo'),
+(3, 'Solicitado', 'Documento Solicitado ', 'link3', 'activo'),
+(4, 'Operacion', 'CEDULA', 'link4', 'activo'),
+(5, 'Operacion', 'cc', 'link5', 'activo'),
+(8, 'Operacion', 'c.c', 'link8', 'activo'),
+(14, 'ReciboDePago', 'Recibo de Pago 3', 'link9', 'INactivo'),
+(14, 'ReciboDePago', 'Recibo de Pago REALL', 'link10', 'activo'),
+(14, 'Operacion', 'NotasSemestre4', 'link11', 'activo'),
+(2, 'Solicitado', 'Trámite', 'link12', 'activo'),
+(14, 'Operacion', 'Recibo de agua', 'link13', 'activo'),
+(2, 'Operacion', 'CÉDULA', 'link14', 'activo'),
+(2, 'Operacion', 'CÉDULA ', 'link15', 'activo'),
+(5, 'Operacion', 'CÉDULA ', 'link16', 'activo');
+
+
+INSERT INTO solicitud (idUsuario,idFuncionario,idTramite)  VALUES (18,5,12),
+(19,3,2),(4,5,10),(12,2,17),
+(18,2,1),(18,5,14),(12,3,16);
+
+UPDATE solicitud SET estado='en proceso' WHERE idUsuario IN(18,19,4,12);
+
+INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
+VALUES(16,'Pagado',current_date(),current_date()+1,current_date(),105000),
+(17,'Pagado',current_date(),current_date()+3,current_date()+1,105000 ),
+(18,'Pagado',current_date(),current_date()+4,current_date()+2,105000),
+(19,'Pagado',current_date(),current_date()+5,current_date()+1,0),
+(20,'Pagado',current_date(),current_date()+6,current_date()+3,98530),
+(21,'Pagado',current_date(),current_date()+7,current_date()+5,105000),
+(22,'Pagado',current_date(),current_date()+8,current_date()+1,101201);
+
+-- Insertar pagos en solicitudes seleccionadas
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
+VALUES (6, 'Pagado', current_date()-2, current_date()+3, 2000,current_date());
+
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
+VALUES (4, 'Por Pagar', current_date(), current_date(), 1500, NULL);
+
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
+VALUES (8, 'Por Pagar', current_date()-1, current_date, 2500,NULL);
+
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
+VALUES (10, 'Por Pagar', current_date()-1, current_date, 3000,NULL);
+
+INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
+VALUES (12, 'Pagado',current_date()-2, current_date()+10,56000,'2024-04-24'),
+		(14, 'Pagado', current_date()+5, current_date()+12,98500,'2024-04-25');
+
+UPDATE pago SET fechaLimite=fechaLimite+1 WHERE idSolicitud=4;
+UPDATE pago SET fechaLimite=fechaLimite+3 WHERE idSolicitud=8;
+UPDATE pago SET fechaLimite=fechaLimite+2 WHERE idSolicitud=10;
+
+UPDATE solicitud set estado='completado' where idSolicitud IN(18,19,20,21);
+
+   

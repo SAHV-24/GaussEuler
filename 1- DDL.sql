@@ -2,16 +2,6 @@ DROP DATABASE IF EXISTS PROYECTO;
 CREATE DATABASE PROYECTO;
 USE PROYECTO;
 
--- Normativa
-CREATE TABLE Normativa (
-			idNormativa int NOT NULL AUTO_INCREMENT,
-			linkPlantilla TEXT NOT NULL,
-			descripcionNormativa MEDIUMTEXT NOT NULL,
-			fecha DATETIME NOT NULL DEFAULT NOW(),
-			esVigente BOOLEAN NOT NULL,
-            
-			PRIMARY KEY (idNormativa)
-			);
 -- Unidad
 CREATE TABLE Unidad (
 			  idUnidad int NOT NULL AUTO_INCREMENT,
@@ -21,20 +11,36 @@ CREATE TABLE Unidad (
 	
 			  PRIMARY KEY (idUnidad)
 			  );
+ALTER TABLE unidad ADD CONSTRAINT checkExtension CHECK(extension<100000);
+ALTER TABLE unidad ADD CONSTRAINT checkCorreoUnidad CHECK(correo LIKE '%@%');
+
 
 -- Tramite
 CREATE TABLE Tramite (
 			idTramite int NOT NULL AUTO_INCREMENT,
 			idUnidad int NOT NULL,
-			idNormativa int NOT NULL,
+			linkPlantilla TEXT NOT NULL,
 			nombre varchar(200) NOT NULL,
 			descripcion TEXT NOT NULL,
 			costo decimal(12,2) DEFAULT NULL,
             
 			PRIMARY KEY (idTramite),
-            FOREIGN KEY(idUnidad) REFERENCES unidad(idunidad),
-            FOREIGN KEY (idNormativa) REFERENCES normativa(idNormativa)
-);
+            FOREIGN KEY(idUnidad) REFERENCES unidad(idunidad))
+            ;
+
+ALTER TABLE Tramite ADD CONSTRAINT revisarCOsto CHECK (costo>=0);    
+-- Normativa
+CREATE TABLE Normativa (
+			idNormativa int NOT NULL AUTO_INCREMENT,
+            idTramite INT NOT NULL,
+			descripcionNormativa MEDIUMTEXT NOT NULL,
+			fecha DATETIME NOT NULL DEFAULT NOW(),
+			esVigente BOOLEAN NOT NULL,
+            
+			PRIMARY KEY (idNormativa),
+            FOREIGN KEY(idTRamite) REFERENCES tramite (idTramite)
+			);
+
 
 CREATE TABLE Usuario 	(
 			idUsuario INT NOT NULL AUTO_INCREMENT,
@@ -50,6 +56,8 @@ CREATE TABLE Usuario 	(
 			UNIQUE(identificacion,tipo)
 			);
 
+ALTER TABLE Usuario ADD CONSTRAINT checkCorreoUsu CHECK(correoElectronico LIKE '%@%');
+
 -- Solicitud
 CREATE TABLE Solicitud (
 			idSolicitud INT NOT NULL AUTO_INCREMENT,
@@ -64,7 +72,9 @@ CREATE TABLE Solicitud (
 			FOREIGN KEY(idFuncionario) REFERENCES usuario(idUsuario),
 			FOREIGN KEY(idTramite) REFERENCES tramite(idTramite)
 			);
-             
+
+ALTER TABLE solicitud ADD CONSTRAINT revisarEstados 
+CHECK (ESTADO='pendiente' or estado='en proceso'or estado='completado'or estado='cerrado'or estado='cancelado');
 -- Documento:
 CREATE TABLE Documento (
 			idDocumento INT NOT NULL AUTO_INCREMENT,
@@ -78,6 +88,7 @@ CREATE TABLE Documento (
 			PRIMARY KEY(idDocumento),
 			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud)
                         );
+
 -- CONSTRAINTS                    
 -- Pago:
 CREATE TABLE Pago (
@@ -93,7 +104,10 @@ CREATE TABLE Pago (
 			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud)
                         );
                         
-ALTER TABLE PAGO ADD CONSTRAINT revisarFechas CHECK (fechaInicio<=FechaLimite);    
+ALTER TABLE PAGO ADD CONSTRAINT revisarFechas CHECK (fechaInicio<=FechaLimite);   
+ALTER TABLE PAGO ADD CONSTRAINT revisarMonto CHECK (MONTO>=0);    
+
+-- fechaDeCancelacion se maneja desde un trigger, no desde un constraint.
 
 -- Comentario:
 CREATE TABLE Comentario(
