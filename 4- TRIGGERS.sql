@@ -178,19 +178,7 @@ FOR EACH ROW
 	END //
 DELIMITER ; 
 
--- TRIGGER PARA VERIFICAR LA FECHA DE CANCELACIÓN
-DROP TRIGGER IF EXISTS  verificarFechaDeCancelacion;
 
-DELIMITER //
-CREATE TRIGGER verificarFechaDeCancelacion BEFORE INSERT ON PAGO
-FOR EACH ROW
-BEGIN
-	IF NEW.fechaDeCancelacion IS NOT NULL AND NEW.fechaDeCancelacion NOT BETWEEN NEW.fechaInicio AND NEW.fechaLimite THEN
-		SIGNAL sqlstate '45000' SET MESSAGE_TEXT = 'NO ES POSIBLE INSERTAR ESTA FECHA DE CANCELACIÓN PORQUE HAY UN ERROR CON LAS FECHAS';
-    END IF;
-    
-END
-// DELIMITER ;
 
 -- TRIGGER que NO permite que se agreguen más comentarios luego de que se cerró la solicitud.
 
@@ -332,4 +320,55 @@ BEGIN
 		
  END;
 // DELIMITER ;
+
+
+;
+
+
+
+DROP TRIGGER IF EXISTS verificarFechaDeCancelacion;
+
+DELIMITER //
+CREATE TRIGGER UPDATEverificarFechaDeCancelacion BEFORE UPDATE ON PAGO
+FOR EACH ROW
+BEGIN
+
+IF NEW.fechaDeCancelacion > NEW.fechaLimite OR
+	NEW.fechaDeCancelacion < NEW.fechainicio THEN
+    
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Verificar la fecha de Cancelación!';
+END IF;
+
+END;
+// DELIMITER ; 
+
+
+
+-- TRIGGER PARA VERIFICAR LA FECHA DE CANCELACIÓN
+DROP TRIGGER IF EXISTS  verificarFechaDeCancelacion;
+
+DELIMITER //
+CREATE TRIGGER verificarFechaDeCancelacion BEFORE INSERT ON PAGO
+FOR EACH ROW
+BEGIN
+	IF NEW.fechaDeCancelacion IS NOT NULL AND NEW.fechaDeCancelacion NOT BETWEEN NEW.fechaInicio AND NEW.fechaLimite THEN
+		SIGNAL sqlstate '45000' SET MESSAGE_TEXT = 'NO ES POSIBLE INSERTAR ESTA FECHA DE CANCELACIÓN PORQUE HAY UN ERROR CON LAS FECHAS';
+    END IF;
+    
+END
+// DELIMITER ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
