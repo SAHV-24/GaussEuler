@@ -534,3 +534,50 @@ END
 
 
 
+DROP TRIGGER IF EXISTS VerificarHoraComentario;
+
+DELIMITER // 
+CREATE TRIGGER VerificarHoraComentario BEFORE INSERT ON comentario
+FOR EACH ROW
+
+BEGIN
+	DECLARE horaMaxima DATETIME;
+    
+    SELECT MAX(fechaYhora) INTO horaMaxima
+    FROM comentario GROUP BY (new.idSolicitud);
+    
+    IF new.fechaYhora < horaMaxima THEN 
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'ERROR: La hora de envío de este comentario no concuerda con la 
+										del último comentario de la solicitud!';
+    END IF;
+    
+END
+// DELIMITER ; 
+
+
+
+
+DROP TRIGGER IF EXISTS VerificarHoraComentarioUPD;
+
+DELIMITER // 
+CREATE TRIGGER VerificarHoraComentarioUPD BEFORE UPDATE ON comentario
+FOR EACH ROW
+
+BEGIN
+	DECLARE horaMaxima DATETIME;
+    
+    SELECT MAX(fechaYhora) INTO horaMaxima
+    FROM comentario GROUP BY (new.idSolicitud);
+    
+    IF new.fechaYhora < horaMaxima 
+    THEN 
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'ERROR: La hora de envío de este comentario no concuerda con la 
+										del último comentario de la solicitud!';
+    END IF;
+    
+END
+// DELIMITER ; 
+
+
