@@ -57,7 +57,7 @@ CREATE TRIGGER relacionUnoAUnoPagoINS BEFORE INSERT ON pago
 FOR EACH ROW
 BEGIN
 	IF NEW.idSolicitud IN (SELECT idSolicitud FROM pago) THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede insertar un nuevo pago puesto que ya existe un Pago Activo para esta Solicitud';
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ya existe un pago para esta solicitud, Actualizalo ó  Elimina y Crea un nuevo registro!';
 	END IF;
 END
 // DELIMITER ; 
@@ -325,8 +325,7 @@ BEGIN
 ;
 
 
-
-DROP TRIGGER IF EXISTS verificarFechaDeCancelacion;
+DROP TRIGGER IF EXISTS UPDATEverificarFechaDeCancelacion;
 
 DELIMITER //
 CREATE TRIGGER UPDATEverificarFechaDeCancelacion BEFORE UPDATE ON PAGO
@@ -336,7 +335,7 @@ BEGIN
 IF NEW.fechaDeCancelacion > NEW.fechaLimite OR
 	NEW.fechaDeCancelacion < NEW.fechainicio THEN
     
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: Verificar la fecha de Cancelación!';
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: La fecha de cancelación no coincide con las Fechas de Inicio o De Límite!';
 END IF;
 
 END;
@@ -352,7 +351,7 @@ CREATE TRIGGER verificarFechaDeCancelacion BEFORE INSERT ON PAGO
 FOR EACH ROW
 BEGIN
 	IF NEW.fechaDeCancelacion IS NOT NULL AND NEW.fechaDeCancelacion NOT BETWEEN NEW.fechaInicio AND NEW.fechaLimite THEN
-		SIGNAL sqlstate '45000' SET MESSAGE_TEXT = 'NO ES POSIBLE INSERTAR ESTA FECHA DE CANCELACIÓN PORQUE HAY UN ERROR CON LAS FECHAS';
+		SIGNAL sqlstate '45000' SET MESSAGE_TEXT = 'ERROR: La fecha de cancelación no coincide con las Fechas de Inicio o De Límite!';
     END IF;
     
 END
@@ -362,6 +361,40 @@ END
 
 
 
+
+DROP TRIGGER IF EXISTS verificarFechaLimiteUPDATE;
+
+DELIMITER //
+
+CREATE TRIGGER verificarFechaLimiteUPDATE BEFORE UPDATE ON pago
+FOR EACH ROW
+
+BEGIN
+	IF NEW.fechaLimite > NEW.fechaDeCancelacion THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El pago ya está cancelado, no puede modificarse la fecha de modificación!';
+	END IF;       
+END
+
+
+// DELIMITER ; 
+
+
+
+DROP TRIGGER IF EXISTS verificarFechaLimiteINSERT;
+
+DELIMITER //
+
+CREATE TRIGGER verificarFechaLimiteINSERT BEFORE INSERT ON pago
+FOR EACH ROW
+
+BEGIN
+	IF NEW.fechaLimite > NEW.fechaDeCancelacion AND NEW.fechaDeCancelacion IS NOT NULL THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha Límite no puede ser Mayor a la fecha De Cancelación!';
+	END IF;       
+END
+
+
+// DELIMITER ; 
 
 
 
