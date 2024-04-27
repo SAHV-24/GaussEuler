@@ -445,5 +445,45 @@ $$ DELIMITER ;
 
 
 
+DROP TRIGGER IF EXISTS verificarComentarioAnteriorINSERT;
+DELIMITER $$
+
+CREATE TRIGGER verificarComentarioAnteriorINSERT BEFORE INSERT ON comentario
+FOR EACH ROW
+BEGIN
+	DECLARE solicitudPasada INT;
+    
+    IF NEW.comentarioAnterior IS NOT NULL THEN
+		SELECT idSolicitud INTO solicitudPasada 
+        FROM comentario WHERE idComentario = NEW.comentarioAnterior;
+        
+        IF NEW.idSolicitud != solicitudPasada THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: El comentario anterior no es de esta solicitud!';
+        END IF;       
+    END IF;
+END
+
+$$ DELIMITER ; 
+
+
+DROP TRIGGER IF EXISTS verificarComentarioAnteriorUPDATE;
+DELIMITER $$
+
+CREATE TRIGGER verificarComentarioAnteriorUPDATE AFTER UPDATE ON comentario
+FOR EACH ROW
+BEGIN
+	DECLARE solicitudPasada INT;
+    
+    IF NEW.comentarioAnterior IS NOT NULL THEN
+		SELECT idSolicitud INTO solicitudPasada 
+        FROM comentario WHERE idComentario = NEW.comentarioAnterior;
+        
+        IF NEW.idSolicitud != solicitudPasada THEN
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: El comentario anterior no es de esta solicitud!';
+        END IF;       
+    END IF;
+END
+
+$$ DELIMITER ; 
 
 

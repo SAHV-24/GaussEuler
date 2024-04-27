@@ -102,7 +102,7 @@ CREATE TABLE Pago (
 			
 			PRIMARY KEY(idPago),
 			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud)
-                        );
+			);
                         
 ALTER TABLE PAGO ADD CONSTRAINT revisarFechas CHECK (fechaInicio<=FechaLimite);   
 ALTER TABLE PAGO ADD CONSTRAINT revisarMonto CHECK (MONTO>=0);    
