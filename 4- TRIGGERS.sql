@@ -487,3 +487,50 @@ END
 $$ DELIMITER ; 
 
 
+
+DROP TRIGGER IF EXISTS relacionReflexivaComentario ;
+
+DELIMITER // 
+
+CREATE TRIGGER relacionReflexivaComentario BEFORE INSERT ON COMENTARIO
+FOR EACH ROW
+
+BEGIN
+	DECLARE cantComentarioPrincipal INT;
+    
+    SELECT COUNT(*) INTO cantComentarioPrincipal
+    FROM comentario WHERE idSolicitud= NEW.idSolicitud and comentarioAnterior IS NULL;
+    
+    IF cantComentarioPrincipal = 1 AND NEW.comentarioAnterior IS NULL THEN
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Este comentario debe ser referenciado a otro puesto que ya existe el comentario de Origen';
+	END IF;
+END
+
+// DELIMITER ; 
+
+DROP TRIGGER IF EXISTS relacionReflexivaComentarioUPD ;
+
+DELIMITER // 
+
+CREATE TRIGGER relacionReflexivaComentarioUPD BEFORE UPDATE ON COMENTARIO
+FOR EACH ROW
+
+BEGIN
+	DECLARE cantComentarioPrincipal INT;
+    
+    SELECT COUNT(*) INTO cantComentarioPrincipal
+    FROM comentario 
+    WHERE idSolicitud= NEW.idSolicitud 
+    And comentarioAnterior IS NULL;
+    
+    IF cantComentarioPrincipal = 1 AND NEW.comentarioAnterior IS NULL THEN
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Este comentario debe ser referenciado a otro puesto que ya existe el comentario de Origen';
+	END IF;
+END
+
+// DELIMITER ; 
+
+
+
