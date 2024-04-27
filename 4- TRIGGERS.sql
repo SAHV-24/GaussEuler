@@ -370,15 +370,26 @@ CREATE TRIGGER verificarFechaLimiteUPDATE BEFORE UPDATE ON pago
 FOR EACH ROW
 
 BEGIN
-	IF NEW.fechaLimite > NEW.fechaDeCancelacion THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El pago ya está cancelado, no puede modificarse la fecha de modificación!';
-	END IF;       
+
+	IF NEW.fechaLimite > OLD.fechaDeCancelacion AND OLD.fechaDeCancelacion IS NOT NULL
+    AND OLD.estadoDePago = 'Pagado' AND NEW.estadoDePAGO='Pagado'
+	THEN
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'ERROR: El pago ya está cancelado, 
+							no puede modificarse la fecha de Cancelación!';
+	END IF;
+    
+    IF  NEW.fechaLimite < NEW.fechaDeCancelacion AND NEW.fechaDeCancelacion IS NOT NULL
+    THEN
+    
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'ERROR: Verifique las fechas de Límite y las fechas de Cancelación por favor!';
+    
+    END IF;       
 END
 
 
 // DELIMITER ; 
-
-
 
 DROP TRIGGER IF EXISTS verificarFechaLimiteINSERT;
 
@@ -388,8 +399,9 @@ CREATE TRIGGER verificarFechaLimiteINSERT BEFORE INSERT ON pago
 FOR EACH ROW
 
 BEGIN
-	IF NEW.fechaLimite > NEW.fechaDeCancelacion AND NEW.fechaDeCancelacion IS NOT NULL THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha Límite no puede ser Mayor a la fecha De Cancelación!';
+	IF NEW.fechaLimite < NEW.fechaDeCancelacion AND NEW.fechaDeCancelacion IS NOT NULL THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha Límite no puede ser Menor 
+													a la fecha De Cancelación!';
 	END IF;       
 END
 
@@ -397,9 +409,39 @@ END
 // DELIMITER ; 
 
 
+DROP TRIGGER IF EXISTS verificarEstadoPagoUPDATE;
+
+DELIMITER $$
+
+CREATE TRIGGER verificarEstadoPagoUPDATE AFTER UPDATE ON PAGO
+FOR EACH ROW
+
+BEGIN
+    IF NEW.estadoDePago = 'Pagado' AND NEW.fechaDeCancelacion IS NULL THEN 
+		SIGNAL sqlstate '45000' 
+        SET MESSAGE_TEXT = 'Antes de cambiar el estado del pago, debe agregarse la FECHA DE CANCELACIÓN!';
+	END IF;
+END
+
+$$ DELIMITER ; 
 
 
 
+DROP TRIGGER IF EXISTS verificarEstadoPagoINSERT;
+
+DELIMITER $$
+
+CREATE TRIGGER verificarEstadoPagoINSERT BEFORE INSERT ON PAGO
+FOR EACH ROW
+
+BEGIN
+    IF NEW.estadoDePago = 'Pagado' AND NEW.fechaDeCancelacion IS NULL THEN 
+		SIGNAL sqlstate '45000' 
+        SET MESSAGE_TEXT = 'Antes de agregar este registro, debe agregarse la FECHA DE CANCELACIÓN!';
+	END IF;
+END
+
+$$ DELIMITER ; 
 
 
 
