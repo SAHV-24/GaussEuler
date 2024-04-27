@@ -210,7 +210,7 @@ BEGIN
                 
     SET cant = (SELECT COUNT(*) FROM documento WHERE idSolicitud= laID and ESTADOdocumento='Activo' and tipoDocumento='ReciboDePago');
 
-		IF cant>=1 THEN
+		IF cant>=1 AND new.tipoDocumento = 'ReciboDePago'THEN
 
 				SIGNAL SQLSTATE '45000' 
 				SET MESSAGE_TEXT='ERROR, YA EXISTE UN RECIBO DE PAGO ACTIVO, DEBE DESACTIVARLO ANTES DE INSERTAR UN RECIBO DE PAGO';

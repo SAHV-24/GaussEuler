@@ -211,27 +211,30 @@ VALUES (1,3,3,'Hola',NULL),
 
 -- DOCUMENTOS : 
 
-
 INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
 VALUES 
 (15, 'ReciboDePago', 'Recibo de Pago', 'link1', 'inactivo'),
 (15, 'Operacion', 'CEDULA', 'link2', 'activo'),
 (15, 'Operacion', 'Derechos', 'link6', 'activo'),
-(15, 'ReciboDePago', 'Recibo de Pago 2', 'link7', 'activo'),
 (3, 'Solicitado', 'Documento Solicitado ', 'link3', 'activo'),
 (4, 'Operacion', 'CEDULA', 'link4', 'activo'),
 (5, 'Operacion', 'cc', 'link5', 'activo'),
-(8, 'Operacion', 'c.c', 'link8', 'activo'),
-(14, 'ReciboDePago', 'Recibo de Pago 3', 'link9', 'INactivo'),
-(14, 'ReciboDePago', 'Recibo de Pago REALL', 'link10', 'activo'),
-(14, 'Operacion', 'NotasSemestre4', 'link11', 'activo'),
-(2, 'Solicitado', 'Trámite', 'link12', 'activo'),
+(8, 'Operacion', 'c.c', 'link8', 'activo');
+
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
+VALUES 
+(14, 'ReciboDePago', 'Recibo de Pago 3', 'link9', 'INactivo');
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
+VALUES 
+(14, 'ReciboDePago', 'Recibo de Pago REALL', 'link10', 'activo');
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
+VALUES (14, 'Operacion', 'NotasSemestre4', 'link11', 'activo');
+INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
+VALUES (2, 'Solicitado', 'Trámite', 'link12', 'activo'),
 (14, 'Operacion', 'Recibo de agua', 'link13', 'activo'),
 (2, 'Operacion', 'CÉDULA', 'link14', 'activo'),
 (2, 'Operacion', 'CÉDULA ', 'link15', 'activo'),
 (5, 'Operacion', 'CÉDULA ', 'link16', 'activo');
-
-
 
 
 INSERT INTO solicitud (idUsuario,idFuncionario,idTramite)  VALUES (18,5,12),
@@ -241,18 +244,25 @@ INSERT INTO solicitud (idUsuario,idFuncionario,idTramite)  VALUES (18,5,12),
 UPDATE solicitud SET estado='en proceso' WHERE idUsuario IN(18,19,4,12);
 
 INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
-VALUES(16,'Pagado',current_date(),current_date()+1,current_date(),105000),
-(17,'Pagado',current_date(),current_date()+3,current_date()+1,105000 ),
-(18,'Pagado',current_date(),current_date()+4,current_date()+2,105000),
-(19,'Pagado',current_date(),current_date()+5,current_date()+1,0),
-(20,'Pagado',current_date(),current_date()+6,current_date()+3,98530),
-(21,'Pagado',current_date(),current_date()+7,current_date()+5,105000),
-(22,'Pagado',current_date(),current_date()+8,current_date()+1,101201);
+VALUES(16,'Pagado',current_date(),current_date()+1,current_date(),105000);
+INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
+VALUES
+(17,'Pagado',current_date(),current_date()+3,current_date()+1,105000 );
+INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
+VALUES(18,'Pagado',current_date(),current_date()+3,current_date()+2,105000);
+INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
+VALUES(19,'Pagado',current_date(),current_date()+3,current_date()+1,0);
+
+INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
+VALUES
+(20,'Pagado',current_date(),current_date(),current_date(),98530),
+(21,'Pagado',current_date(),current_date(),current_date(),105000),
+(22,'Pagado',current_date(),current_date()+1,current_date(),101201);
 
 -- Insertar pagos en solicitudes seleccionadas
 INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
 VALUES 
-(6, 'Pagado', current_date()-2, current_date()-1, 2000,NULL);
+(6, 'Pagado', current_date()-2, current_date(), 2000,current_date());
 INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
 VALUES 
 (4, 'Por Pagar', current_date(), current_date(), 1500, NULL);
@@ -262,8 +272,8 @@ VALUES (8, 'Por Pagar', current_date()-1, current_date, 2500,NULL);
 INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
 VALUES (10, 'Por Pagar', current_date()-1, current_date, 3000,NULL);
 INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
-VALUES (12, 'Pagado',current_date()-2, current_date()+10,56000,'2024-04-24'),
-(14, 'Pagado', current_date()+5, current_date()+12,98500,'2024-04-25');
+VALUES (12, 'Pagado',current_date()-2, current_date()+3,56000,current_date()),
+(14, 'Pagado', current_date()+1, current_date()+3,98500,current_date()+2);
 
 UPDATE pago SET fechaLimite=fechaLimite+1 WHERE idSolicitud=4;
 UPDATE pago SET fechaLimite=fechaLimite+3 WHERE idSolicitud=8;
