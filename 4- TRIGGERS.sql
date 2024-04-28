@@ -197,9 +197,7 @@ FOR EACH ROW
 DELIMITER ; 
 
 
-
 -- TRIGGER que NO permite que se agreguen más comentarios luego de que se cerró la solicitud.
-
 DROP TRIGGER IF EXISTS estadoSolicitud_en_comentario;
 
 DELIMITER //
@@ -213,6 +211,23 @@ BEGIN
 	END IF;
 END // 
 DELIMITER ;
+
+-- Trigger para no dejar actualizar un comentario si la solicitud ya está cerrada.
+
+DROP TRIGGER IF EXISTS UPDATEestadoSolicitud_en_comentario;
+
+DELIMITER //
+CREATE TRIGGER UPDATEestadoSolicitud_en_comentario AFTER UPDATE ON comentario
+FOR EACH ROW
+BEGIN
+	DECLARE laId INT;
+	SET laId = New.idSolicitud;
+	IF getEstadoSolicitud(laId)='cerrado' THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='ERROR, LA SOLICITUD ESTÁ CERRADA';
+	END IF;
+END // 
+DELIMITER ;
+
 
 -- TRIGGER QUE VERIFICA SI YA EXISTE UN DOCUMENTO DE RECIBO DE PAGO ACTIVO.
 DROP TRIGGER IF EXISTS verificar_reciboDePago;
