@@ -228,6 +228,64 @@ BEGIN
 END // 
 DELIMITER ;
 
+-- TRIGGER QUE NO PERMITE ACTUALIZAR EL ESTADO DE UN PAGO SI NO EXISTE UN RECIBO DE PAGO ACTIVO
+
+DROP TRIGGER IF EXISTS verificarRecibosActivosEnPagoUPDATE;
+
+DELIMITER $$
+
+CREATE TRIGGER verificarRecibosActivosEnPagoUPDATE BEFORE UPDATE on PAGO
+FOR EACH ROW
+BEGIN
+	DECLARE recibosActivos INT;
+    
+    SELECT COUNT(*) INTO recibosActivos 
+    FROM documento 
+    WHERE idSolicitud = NEW.idSolicitud AND tipoDocumento = 'ReciboDePago' AND estadoDocumento ='activo';
+    
+    IF NEW.estadoDePago = 'Pagado' THEN
+    
+	IF recibosActivos != 1 THEN
+			SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT= 'No existe ningún Recibo de Pago activo para esta solicitud!';
+		END IF;
+        
+	END IF;
+    
+END
+
+$$ DELIMITER ; 
+
+-- TRIGGER QUE NO PERMITE INSERTAR UN PAGO REALIZADO SI NO EXISTE NINGÚN RECIBO DE PAGO ACTIVO 
+
+DROP TRIGGER IF EXISTS verificarRecibosActivosEnPagoINSERT;
+
+DELIMITER $$
+
+CREATE TRIGGER verificarRecibosActivosEnPagoINSERT BEFORE INSERT on PAGO
+FOR EACH ROW
+BEGIN
+	DECLARE recibosActivos INT;
+    
+    SELECT COUNT(*) INTO recibosActivos 
+    FROM documento 
+    WHERE idSolicitud = NEW.idSolicitud AND tipoDocumento = 'ReciboDePago' AND estadoDocumento ='activo';
+    
+    IF NEW.estadoDePago = 'Pagado' THEN
+    
+	IF recibosActivos != 1 THEN
+			SIGNAL SQLSTATE '45000' 
+            SET MESSAGE_TEXT= 'No existe ningún Recibo de Pago activo para esta solicitud!';
+		END IF;
+        
+	END IF;
+    
+END
+
+$$ DELIMITER ; 
+
+
+
 
 -- TRIGGER QUE VERIFICA SI YA EXISTE UN DOCUMENTO DE RECIBO DE PAGO ACTIVO.
 DROP TRIGGER IF EXISTS verificar_reciboDePago;
