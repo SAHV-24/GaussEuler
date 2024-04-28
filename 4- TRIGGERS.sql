@@ -4,7 +4,7 @@
 
 
 
--- TRIGGER QUE CUANDO SE INGRESE UN COMENTARIO SE CAMBIE EL ESTADO A 'En proceso'
+-- TRIGGER QUE CUANDO SE INGRESE UN COMENTARIO SE CAMBIE EL ESTADO A 'En proceso' y Verifica que el usuario sea de esta solicitud
 DROP TRIGGER IF EXISTS Comentario_en_proceso;
 DELIMITER || 
 CREATE TRIGGER Comentario_en_proceso BEFORE INSERT ON comentario
@@ -29,6 +29,8 @@ BEGIN
     
 END
 || DELIMITER ; 
+
+
 
 DROP TRIGGER IF EXISTS verificarPagos;
 
@@ -125,7 +127,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- TRIGGERS PARA CAMBIAR EL MONTO DEL PAGO DE DE UN DOCUMENTO 'TRAMITADO'
+-- TRIGGERS PARA PONER EL MISMO MONTO DEL TRÁMITE
 
 
 DROP trigger IF EXISTS INSERT_MONTO_SDOC_SOLICITADO;
@@ -147,7 +149,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- TRIGGERS PARA QUE CUANDO SE INSERTE EL DOCUMENTO SOLICITADO CAMBIE EL ESTADO DE LA SOLICITUD.
+-- TRIGGER PARA QUE CUANDO SE INSERTE EL DOCUMENTO SOLICITADO CAMBIE EL ESTADO DE LA SOLICITUD.
 
 DROP TRIGGER IF EXISTS insert_doc_solicitado;
 DELIMITER //
@@ -157,7 +159,7 @@ FOR EACH ROW
 		DECLARE Id INT;
 		SET id = NEW.idSolicitud;
 
-		IF NEW.tipoDocumento = 'Solicitado' THEN
+		IF NEW.tipoDocumento = 'Solicitado' AND NEW.estadoDocumento = 'activo' THEN
 			UPDATE solicitud SET estado = 'completado' WHERE idSolicitud = id;
 		END IF;
 	END //
@@ -165,15 +167,31 @@ DELIMITER ;
 
 -- 	Lo mismo pero para un UPDATE
 DROP TRIGGER IF EXISTS update_doc_solicitado;
-DELIMITER 
+DELIMITER //
 CREATE TRIGGER update_doc_solicitado BEFORE UPDATE on documento
 FOR EACH ROW
 	BEGIN
 		DECLARE Id INT;
 		SET id = NEW.idSolicitud;
 
-		IF NEW.tipoDocumento = 'Solicitado' THEN
+		IF NEW.tipoDocumento = 'Solicitado' AND NEW.estadoDocumento = 'activo' THEN
 			UPDATE solicitud SET estado = 'completado' WHERE idSolicitud = id;
+		END IF;
+	END //
+DELIMITER ; 
+
+-- Si se elimina ese registro y el estado del documento es activo, se cambia el estado de la solicitud
+
+DROP TRIGGER IF EXISTS delete_doc_solicitado;
+DELIMITER //
+CREATE TRIGGER delete_doc_solicitado BEFORE DELETE on documento
+FOR EACH ROW
+	BEGIN
+		DECLARE Id INT;
+		SET id = OLD.idSolicitud;
+
+		IF OLD.tipoDocumento = 'Solicitado' and OLD.estadoDocumento = 'activo' THEN
+			UPDATE solicitud SET estado = 'en proceso' WHERE idSolicitud = id;
 		END IF;
 	END //
 DELIMITER ; 
