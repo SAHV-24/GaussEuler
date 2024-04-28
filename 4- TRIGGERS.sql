@@ -447,23 +447,19 @@ END;
 
 
 
-
 DROP TRIGGER IF EXISTS checkEstadoEnProceso;
 DELIMITER //
 CREATE TRIGGER checkEstadoEnProceso BEFORE UPDATE ON solicitud
 FOR EACH ROW
 BEGIN
 
-	IF OLD.estado='pendiente' AND NEW.estado='completado' THEN 
+	IF OLD.estado='pendiente' AND NEW.estado='completado' OR OLD.estado='pendiente' AND NEW.estado='cerrado' THEN 
 		SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'La solicitud no puede ser completada si no está en proceso!';
     END IF;    
 		
  END;
 // DELIMITER ;
-
-
-;
 
 
 DROP TRIGGER IF EXISTS UPDATEverificarFechaDeCancelacion;
@@ -497,10 +493,6 @@ BEGIN
     
 END
 // DELIMITER ;
-
-
-
-
 
 
 DROP TRIGGER IF EXISTS verificarFechaLimiteUPDATE;
