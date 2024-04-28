@@ -3,114 +3,45 @@
 -- 																									INSERTS          
 -- --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
 -- UNIDADES:
 
-
--- Registro Académico
 INSERT INTO Unidad (nombreUnidad, extension, correo)
-VALUES ('Registro Académico', 12345, 'registroacademico@universidad.edu');
-
--- Departamento de Grados y Títulos
-INSERT INTO Unidad (nombreUnidad, extension, correo)
-VALUES ('Departamento de Grados y Títulos', 12346, 'gradosytitulos@universidad.edu');
-
--- Unidad de Recursos Humanos
-INSERT INTO Unidad (nombreUnidad, extension, correo)
-VALUES ('Unidad de Recursos Humanos', 12347, 'recursoshumanos@universidad.edu');
-
--- Oficina de Relaciones Externas
-INSERT INTO Unidad (nombreUnidad, extension, correo)
-VALUES ('Oficina de Relaciones Externas', 12348, 'relacionesexternas@universidad.edu');
-
--- Departamento de Bienestar Universitario
-INSERT INTO Unidad (nombreUnidad, extension, correo)
-VALUES ('Departamento de Bienestar Universitario', 12349, 'bienestaruniversitario@universidad.edu');
-
--- Departamento de Investigación
-INSERT INTO Unidad (nombreUnidad, extension, correo)
-VALUES ('Departamento de Investigación', 12350, 'investigacion@universidad.edu');
-
--- Departamento de Prácticas Profesionales
-INSERT INTO Unidad (nombreUnidad, extension, correo)
-VALUES ('Departamento de Prácticas Profesionales', 12351, 'practicasprofesionales@universidad.edu');
+VALUES 
+('Departamento de Bienestar Universitario', 12349, 'bienestaruniversitario@universidad.edu'),
+('Departamento de Grados y Títulos', 12346, 'gradosytitulos@universidad.edu'),
+('Departamento de Investigación', 12350, 'investigacion@universidad.edu'),
+('Departamento de Prácticas Profesionales', 12351, 'practicasprofesionales@universidad.edu'),
+('Oficina de Relaciones Externas', 12348, 'relacionesexternas@universidad.edu'),
+('Registro Académico', 12345, 'registroacademico@universidad.edu'),
+('Unidad de Recursos Humanos', 12347, 'recursoshumanos@universidad.edu');
 
 
+-- TRÁMITES: 
+
+INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo, linkPlantilla)
+VALUES 
+(1, 2, 'Acta de Grado', 'Trámite para solicitar la expedición del Acta de Grado.', 10000, 'http://actadegrado.pdf'),
+(2, 1, 'Extensión de Créditos', 'Trámite para solicitar una extensión de créditos académicos.', 12000, 'http://extensiondecreditos.pdf'),
+(3, 1, 'Actualización de Documento de Identidad', 'Trámite para actualizar el documento de identidad.', 15000, 'http://actualizaciondocumento.pdf'),
+(4, 1, 'Actualización de Datos Personales', 'Trámite para actualizar los datos personales del estudiante.', 8000, 'http://actualizaciondatos.pdf'),
+(5, 1, 'Modificación de Matrícula Académica', 'Trámite para modificar la matrícula académica del estudiante.', 9000, 'http://modificacionmatricula.pdf'),
+(6, 1, 'Solicitud de Documento Académico', 'Trámite para solicitar documentos académicos como certificados y constancias.', 7000, 'http://solicituddocumento.pdf'),
+(7, 4, 'Solicitud de Intercambio MOVE', 'Trámite para solicitar participación en el programa de intercambio estudiantil MOVE.', 11000, 'http://solicitudintercambio.pdf'),
+(8, 5, 'Solicitud de Servicios de Apoyo Estudiantil', 'Trámite para solicitar servicios de apoyo estudiantil.', 13000, 'http://solicitudapoyo.pdf'),
+(9, 1, 'Modificación de Horario', 'Trámite para solicitar modificaciones en el horario de clases.', 10000, 'http://modificacionhorario.pdf'),
+(10, 1, 'Certificado de Matrícula', 'Trámite para obtener un certificado de matrícula.', 8500, 'http://certificadomatricula.pdf'),
+(11, 3, 'Certificado Laboral', 'Trámite para solicitar un certificado laboral.', 9500, 'http://certificadolaboral.pdf'),
+(12, 6, 'Certificado de Publicaciones', 'Trámite para obtener un certificado de publicaciones académicas.', 11000, 'http://certificadopublicaciones.pdf'),
+(13, 7, 'Certificado de Prácticas y Pasantías Institucionales', 'Trámite para obtener un certificado de prácticas y pasantías institucionales.', 12000, 'http://certificadopracticas.pdf'),
+(14, 1, 'Certificado Oficial de Notas', 'Trámite para obtener un certificado oficial de notas.', 9000, 'http://certificadonotas.pdf'),
+(15, 1, 'Solicitud de Contenidos Programáticos', 'Trámite para solicitar contenidos programáticos de cursos y asignaturas.', 8000, 'http://solicitudcontenidos.pdf'),
+(16, 1, 'Solicitud de Cancelación de Semestre', 'Trámite para solicitar la cancelación de un semestre.', 7500, 'http://solicitudcancelacionsemestre.pdf'),
+(17, 1, 'Solicitud de Cancelación de Materias', 'Trámite para solicitar la cancelación de materias inscritas.', 8500, 'http://solicitudcancelacionmaterias.pdf');
 
 
--- TRÁMITES
+-- NORMATIVA
 
--- Acta de Grado
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (1, 2,  'Acta de Grado', 'Trámite para solicitar la expedición del Acta de Grado.', 10000,'http://actadegrado.pdf');
-
--- Extensión de Créditos
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (2, 1,  'Extensión de Créditos', 'Trámite para solicitar una extensión de créditos académicos.', 12000,'http://extensiondecreditos.pdf');
-
--- Actualización de Documento de Identidad
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (3, 1, 'Actualización de Documento de Identidad', 'Trámite para actualizar el documento de identidad.', 15000,'http://actualizaciondocumento.pdf');
-
--- Actualización de Datos personales
-INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
-VALUES (4, 1,  'Actualización de Datos Personales', 'Trámite para actualizar los datos personales del estudiante.', 8000,'http://actualizaciondatos.pdf');
-
--- Modificación de Matrícula Académica
-INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
-VALUES (5, 1,  'Modificación de Matrícula Académica', 'Trámite para modificar la matrícula académica del estudiante.', 9000,'http://modificacionmatricula.pdf');
-
--- Solicitud de Documento Académico
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (6, 1,  'Solicitud de Documento Académico', 'Trámite para solicitar documentos académicos como certificados y constancias.', 7000,'http://solicituddocumento.pdf');
-
--- Solicitud de Intercambio MOVE
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (7, 4,  'Solicitud de Intercambio MOVE', 'Trámite para solicitar participación en el programa de intercambio estudiantil MOVE.', 11000,'http://solicitudintercambio.pdf');
-
--- Solicitud de Servicios de Apoyo estudiantil
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (8, 5,  'Solicitud de Servicios de Apoyo Estudiantil', 'Trámite para solicitar servicios de apoyo estudiantil.', 13000,'http://solicitudapoyo.pdf');
-
--- Modificación de horario
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (9, 1,  'Modificación de Horario', 'Trámite para solicitar modificaciones en el horario de clases.', 10000,'http://modificacionhorario.pdf');
-
--- Certificado de Matrícula
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (10, 1,  'Certificado de Matrícula', 'Trámite para obtener un certificado de matrícula.', 8500,'http://certificadomatricula.pdf');
-
--- Certificado Laboral
-INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
-VALUES (11, 3, 'Certificado Laboral', 'Trámite para solicitar un certificado laboral.', 9500,'http://certificadolaboral.pdf');
-
--- Certificado de publicaciones
-INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
-VALUES (12, 6, 'Certificado de Publicaciones', 'Trámite para obtener un certificado de publicaciones académicas.', 11000,'http://certificadopublicaciones.pdf');
-
--- Certificado de prácticas y pasantías institucionales
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (13, 7, 'Certificado de Prácticas y Pasantías Institucionales', 'Trámite para obtener un certificado de prácticas y pasantías institucionales.', 12000,'http://certificadopracticas.pdf');
-
--- Certificado oficial de notas
-INSERT INTO tramite (idTramite, idUnidad,  nombre, descripcion, costo,linkPlantilla)
-VALUES (14, 1, 'Certificado Oficial de Notas', 'Trámite para obtener un certificado oficial de notas.', 9000,'http://certificadonotas.pdf');
-
--- Solicitud de contenidos programáticos
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (15, 1,  'Solicitud de Contenidos Programáticos', 'Trámite para solicitar contenidos programáticos de cursos y asignaturas.', 8000,'http://solicitudcontenidos.pdf');
-
--- Solicitud de cancelación de semestre
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (16, 1, 'Solicitud de Cancelación de Semestre', 'Trámite para solicitar la cancelación de un semestre.', 7500,'http://solicitudcancelacionsemestre.pdf');
-
--- Solicitud de cancelación de materias
-
-INSERT INTO tramite (idTramite, idUnidad, nombre, descripcion, costo,linkPlantilla)
-VALUES (17, 1, 'Solicitud de Cancelación de Materias', 'Trámite para solicitar la cancelación de materias inscritas.', 8500,'http://solicitudcancelacionmaterias.pdf');
-
-
-
--- Acta de Grado
 INSERT INTO Normativa (idTramite, descripcionNormativa, esVigente)
 VALUES 
 ('1', 'Normativa que establece los requisitos y procedimientos para la obtención del Acta de Grado.', 1),
@@ -134,8 +65,6 @@ VALUES
 
 
 -- USUARIOS:
-
-
 
 INSERT INTO Usuario (sexo, identificacion, tipo, nombre, apellido, correoElectronico, telefono)
 VALUES 
@@ -162,35 +91,41 @@ VALUES
 ('M', 1004400004, 'Empleado', 'Lorena', 'González', 'lorena_gonzalez@uao.edu.co', 4445556666),
 ('H', 1115555555, 'Empleado', 'Javier', 'Gutiérrez', 'javier_gutierrez@uao.edu.co', 5556667777);
 
-
--- 
-
+ 
 -- SOLICITUD:
+
 INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite,fechaInicio)
 VALUES 
-(6, 1, 17,current_date()-4),
-(22, 2, 17,current_date()-4),
-(3, 4, 3,current_date()-4),
-(6, 5, 4,current_date()-4),
-(2, 5, 5,current_date()-4),
-(6, 4, 17,current_date()-4),
-(7, 3, 17,current_date()-4),
-(6, 2, 8,current_date()-4),
-(16, 1, 16,current_date()-4),
-(13, 1, 10,current_date()-4),
-(14,4,16,current_date()-4),
-(12,5,6,current_date()-4),
-(10,3,2,current_date()-4),
-(9,2,16,current_date()-4),
-(4,5,2,current_date()-4);
+(6, 1, 17,'2024-04-30 12:00:00'),
+(22, 2, 17,'2024-04-30 12:00:00'),
+(3, 4, 3,'2024-04-30 12:00:00'),
+(6, 5, 4,'2024-04-30 12:00:00'),
+(2, 5, 5,'2024-04-30 12:00:00'),
+(6, 4, 17,'2024-04-30 12:00:00'),
+(7, 3, 17,'2024-04-30 12:00:00'),
+(6, 2, 8,'2024-04-30 12:00:00'),
+(16, 1, 16,'2024-04-30 12:00:00'),
+(13, 1, 10,'2024-04-30 12:00:00'),
+(14,4,16,'2024-04-30 12:00:00'),
+(12,5,6,'2024-04-30 12:00:00'),
+(10,3,2,'2024-04-30 12:00:00'),
+(9,2,16,'2024-04-30 12:00:00'),
+(4,5,2,'2024-04-30 12:00:00'),
+(18,5,12,'2024-04-30 12:00:00'),
+(19,3,2,'2024-04-30 12:00:00'),
+(4,5,10,'2024-04-30 12:00:00'),
+(12,2,17,'2024-04-30 12:00:00'),
+(18,2,1,'2024-04-30 12:00:00'),
+(18,5,14,'2024-04-30 12:00:00'),
+(12,3,16,'2024-04-30 12:00:00');
 
 -- DESCOMENTAR PARA ACTUALIZAR LOS IDS IMPARES
 -- UPDATE solicitud set estado='en proceso' where idSolicitud%2!=0;
 UPDATE solicitud set estado='en proceso' where idSolicitud%2=0;
+UPDATE solicitud SET estado='en proceso' WHERE idUsuario IN(18,19,4,12);
 
 
--- PROBAR QUE PASA SI SE EJECUTA 
- -- INSERT INTO PAGO(idSolicitud,fechaInicio,fechaLimite) VALUES(1,current_date(),current_date()+1);
+-- COMENTARIO
 
 INSERT INTO comentario (idComentario,idSolicitud,idUsuario,mensaje,comentarioAnterior)
 VALUES (1,3,3,'Hola',NULL),
@@ -209,74 +144,46 @@ VALUES (1,3,3,'Hola',NULL),
 (14,14,9,'Bien y tú?',12),
 (15,14,9,'http://lacedula.com',14);
 
--- DOCUMENTOS : 
+
+-- DOCUMENTO : 
 
 INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
 VALUES 
-(15, 'ReciboDePago', 'Recibo de Pago', 'link1', 'inactivo'),
-(15, 'Operacion', 'CEDULA', 'link2', 'activo'),
-(15, 'Operacion', 'Derechos', 'link6', 'activo'),
+(2, 'Operacion', 'CÉDULA', 'link14', 'activo'),
+(2, 'Operacion', 'CÉDULA ', 'link15', 'activo'),
 (3, 'Solicitado', 'Documento Solicitado ', 'link3', 'activo'),
 (4, 'Operacion', 'CEDULA', 'link4', 'activo'),
 (5, 'Operacion', 'cc', 'link5', 'activo'),
-(8, 'Operacion', 'c.c', 'link8', 'activo');
-
-INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
-VALUES 
-(14, 'ReciboDePago', 'Recibo de Pago 3', 'link9', 'INactivo');
-INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
-VALUES 
-(14, 'ReciboDePago', 'Recibo de Pago REALL', 'link10', 'activo');
-INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
-VALUES (14, 'Operacion', 'NotasSemestre4', 'link11', 'activo');
-INSERT INTO Documento (idSolicitud, tipoDocumento, tituloDocumento, linkDocumento, estadoDocumento)
-VALUES (2, 'Solicitado', 'Trámite', 'link12', 'activo'),
+(5, 'Operacion', 'CÉDULA ', 'link16', 'activo'),
+(8, 'Operacion', 'c.c', 'link8', 'activo'),
+(14, 'Operacion', 'NotasSemestre4', 'link11', 'activo'),
 (14, 'Operacion', 'Recibo de agua', 'link13', 'activo'),
-(2, 'Operacion', 'CÉDULA', 'link14', 'activo'),
-(2, 'Operacion', 'CÉDULA ', 'link15', 'activo'),
-(5, 'Operacion', 'CÉDULA ', 'link16', 'activo');
+(14, 'ReciboDePago', 'Recibo de Pago 3', 'link9', 'INactivo'),
+(14, 'ReciboDePago', 'Recibo de Pago REALL', 'link10', 'activo'),
+(15, 'Operacion', 'CEDULA', 'link2', 'activo'),
+(15, 'Operacion', 'Derechos', 'link6', 'activo'),
+(15, 'ReciboDePago', 'Recibo de Pago', 'link1', 'inactivo');
 
 
-INSERT INTO solicitud (idUsuario,idFuncionario,idTramite)  VALUES (18,5,12),
-(19,3,2),(4,5,10),(12,2,17),
-(18,2,1),(18,5,14),(12,3,16);
+-- PAGO:
 
-UPDATE solicitud SET estado='en proceso' WHERE idUsuario IN(18,19,4,12);
-
-INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
-VALUES(16,'Pagado',current_date(),current_date()+1,current_date(),105000);
-INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
+INSERT INTO pago(idSolicitud, estadoDePago, fechaInicio, fechaLimite, fechaDeCancelacion, monto)
 VALUES
-(17,'Pagado',current_date(),current_date()+3,current_date()+1,105000 );
-INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
-VALUES(18,'Pagado',current_date(),current_date()+3,current_date()+2,105000);
-INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
-VALUES(19,'Pagado',current_date(),current_date()+3,current_date()+1,0);
+    (4, 'Por Pagar', '2024-04-30', '2024-04-30', NULL, 1500),
+    (6, 'Pagado', '2024-04-30', '2024-04-30', '2024-04-30', 2000),
+    (8, 'Por Pagar', '2024-04-30', '2024-04-30', NULL, 2500),
+    (10, 'Por Pagar', '2024-04-30', '2024-04-30', NULL, 3000),
+    (12, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-01', 56000),
+    (14, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-02', 98500),
+    (16, 'Pagado', '2024-04-30', '2024-05-01', '2024-04-30', 105000),
+    (17, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-01', 105000),
+    (18, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-02', 105000),
+    (19, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-01', 0),
+    (20, 'Pagado', '2024-04-30', '2024-04-30', '2024-04-30', 98530),
+    (21, 'Pagado', '2024-04-30', '2024-04-30', '2024-04-30', 105000),
+    (22, 'Pagado', '2024-04-30', '2024-05-01', '2024-04-30', 101201);
 
-INSERT INTO pago(idSolicitud,estadoDePago,fechaInicio,fechaLimite,fechaDecancelacion,monto)
-VALUES
-(20,'Pagado',current_date(),current_date(),current_date(),98530),
-(21,'Pagado',current_date(),current_date(),current_date(),105000),
-(22,'Pagado',current_date(),current_date()+1,current_date(),101201);
+UPDATE pago SET fechaLimite='2024-05-02' WHERE idSolicitud IN(4,8,10);
 
--- Insertar pagos en solicitudes seleccionadas
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
-VALUES 
-(6, 'Pagado', current_date()-2, current_date(), 2000,current_date());
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
-VALUES 
-(4, 'Por Pagar', current_date(), current_date(), 1500, NULL);
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
-VALUES (8, 'Por Pagar', current_date()-1, current_date, 2500,NULL);
-
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
-VALUES (10, 'Por Pagar', current_date()-1, current_date, 3000,NULL);
-INSERT INTO Pago (idSolicitud, estadoDePago, fechaInicio, fechaLimite, monto,fechaDeCancelacion)
-VALUES (12, 'Pagado',current_date()-2, current_date()+3,56000,current_date()),
-(14, 'Pagado', current_date()+1, current_date()+3,98500,current_date()+2);
-
-UPDATE pago SET fechaLimite=fechaLimite+1 WHERE idSolicitud=4;
-UPDATE pago SET fechaLimite=fechaLimite+3 WHERE idSolicitud=8;
-UPDATE pago SET fechaLimite=fechaLimite+2 WHERE idSolicitud=10;
-
+-- Completados:
 UPDATE solicitud set estado='completado' where idSolicitud IN(18,19,20,21);
