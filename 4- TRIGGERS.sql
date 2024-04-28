@@ -418,6 +418,35 @@ BEGIN
 END //
 DELIMITER ;
 
+DROP TRIGGER IF EXISTS cambioDeFechaEnSolicitud;
+
+DELIMITER || 
+
+CREATE TRIGGER cambioDeFechaEnSolicitud BEFORE UPDATE ON solicitud
+FOR EACH ROW
+BEGIN
+
+	DECLARE fechaInicioPago DATE;
+    DECLARE contPagos INT;
+    
+    SELECT count(*) into contPagos FROM pago where idSolicitud = NEW.idSolicitud;
+    
+    IF contPagos = 1 THEN
+		SELECT fechaInicio INTO fechaInicioPago  
+        FROM pago WHERE idsolicitud=NEW.idSolicitud;
+        
+        IF DATE(NEW.fechaInicio) > fechaInicioPago THEN 
+			SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Las fechas de Pago y de la solicitud no coinciden, verificar!';
+        END IF;
+		
+    END IF;
+
+END;
+
+|| DELIMITER ; 
+
+
+
 
 DROP TRIGGER IF EXISTS checkEstadoEnProceso;
 DELIMITER //
