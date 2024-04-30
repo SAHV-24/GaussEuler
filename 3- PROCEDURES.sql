@@ -93,3 +93,22 @@ BEGIN
     
     END
 // DELIMITER ; 
+
+-- Procedimiento para saber cuál es el trámite que se está realizando: 
+
+DROP PROCEDURE IF EXISTS tramiteDesolicitud;
+
+DELIMITER // 
+CREATE PROCEDURE tramiteDeSolicitud(IN laIdSolicitud INT)
+BEGIN
+
+	SELECT t.nombre,t.costo,t.linkPlantilla,u.extension, u.nombreUnidad,u.extension
+    FROM TRAMITE t JOIN SOLICITUD USING(idTramite)
+    JOIN unidad u USING(idUnidad)
+    WHERE idsolicitud=laIdSolicitud;
+
+END;
+
+// DELIMITER ; 
+
+
