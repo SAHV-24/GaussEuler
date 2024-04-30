@@ -49,7 +49,7 @@ CREATE TABLE Usuario 	(
 			apellido VARCHAR(100) NOT NULL,
 			correoElectronico VARCHAR(200) NOT NULL,
 			telefono BIGINT NOT NULL,
-            sexo ENUM('H','M','O'),
+            sexo ENUM('H','M'),
 			
 			PRIMARY KEY(idUsuario),
 			UNIQUE(identificacion,tipo)
@@ -63,7 +63,7 @@ CREATE TABLE Solicitud (
 			idUsuario INT NOT NULL,
 			idFuncionario INT NOT NULL,
 			idTramite INT NOT NULL,
-			estado ENUM('pendiente','en proceso','completado','cerrado','cancelado') NOT NULL DEFAULT 'PENDIENTE',
+			estado ENUM('pendiente','enproceso','completado','cerrado','cancelado') NOT NULL DEFAULT 'PENDIENTE',
 			fechaInicio DATETIME NOT NULL DEFAULT NOW(),
 			
 			PRIMARY KEY(idSolicitud),
@@ -93,7 +93,7 @@ CREATE TABLE Documento (
 CREATE TABLE Pago (
 			idPago INT NOT NULL AUTO_INCREMENT,
 			idSolicitud INT NOT NULL,
-			estadoDePago ENUM('Pagado','Por Pagar') NOT NULL,
+			estadoDePago ENUM('Pagado','PorPagar') NOT NULL,
 			fechaInicio DATE NOT NULL,
 			fechaLimite DATE NOT NULL,
 			fechaDeCancelacion DATE NULL,
