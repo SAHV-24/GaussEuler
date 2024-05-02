@@ -112,3 +112,21 @@ END;
 // DELIMITER ; 
 
 
+DROP PROCEDURE IF EXISTS generarReciboDePago;
+DELIMITER // 
+CREATE PROCEDURE generarReciboDePago (IN laSolicitud INT)
+BEGIN
+
+	IF laSolicitud NOT IN(SELECT idSolicitud FROM pago) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ='No es posible generar un recibo de pago si no existe en la base de datos.';
+	ELSE 
+    	SELECT p.idSolicitud as 'Solicitud #', p.idPago as 'NÚMERO DE PAGO', p.fechaInicio as 'Plazo Mínimo',
+				p.fechaLimite as 'Plazo Máximo', p.monto
+				FROM pago p
+				Where idSolicitud = laSolicitud;
+    END IF;
+    
+END
+// DELIMITER 
+
+
