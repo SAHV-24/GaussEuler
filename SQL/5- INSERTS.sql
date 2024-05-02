@@ -164,6 +164,16 @@ VALUES
 (15, 'Operacion', 'Derechos', 'link6', 'activo'),
 (15, 'ReciboDePago', 'Recibo de Pago', 'link1', 'inactivo');
 
+insert into documento(idSolicitud,tipoDocumento,tituloDocumento,linkDocumento,estadoDocumento) 
+values(6,'ReciboDePago','recibo','recibo.pdf','activo'),
+ (12,'ReciboDePago','recibo','recibo.pdf','activo'),
+ (16,'ReciboDePago','recibo','recibo.pdf','activo'),
+ (17,'ReciboDePago','recibo','recibo.pdf','activo'),
+ (18,'ReciboDePago','recibo','recibo.pdf','activo'),
+ (19,'ReciboDePago','recibo','recibo.pdf','activo'),
+ (20,'ReciboDePago','recibo','recibo.pdf','activo'),
+ (21,'ReciboDePago','recibo','recibo.pdf','activo'),
+ (22,'ReciboDePago','recibo','recibo.pdf','activo');
 
 -- PAGO:
 
