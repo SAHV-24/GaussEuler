@@ -46,4 +46,7 @@ SELECT estado FROM solicitud where idSolicitud=23;
 INSERT into DOCUMENTO(idSolicitud,tipoDocumento,tituloDocumento,linkDocumento,estadoDocumento)VALUES (23,'Solicitado','Documento Solicitado','DocSolcitado_Sol_23.pdf','activo');
 SELECT estado FROM solicitud where idSolicitud=23;
 
-
+-- Cambiar el estado a Cerrado luego de haber terminado
+SELECT estado FROM solicitud where idSolicitud=23;
+UPDATE solicitud SET estado = 'cerrado' WHERE idSolicitud=23;
+SELECT estado FROM solicitud WHERE idSolicitud=23;
