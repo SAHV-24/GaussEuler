@@ -726,3 +726,49 @@ BEGIN
 END
 && DELIMITER ; 
 
+
+DROP TRIGGER IF EXISTS checkRequestedDocIfHasAPaymentINS;
+
+DELIMITER $$
+CREATE TRIGGER checkRequestedDocIfHasAPaymentINS BEFORE INSERT ON documento
+FOR EACH ROW
+BEGIN
+
+DECLARE elEstadoDePago ENUM('Pagado','Por Pagar');
+
+IF new.iDSolicitud IN (SELECT idSolicitud FROM pago) THEN
+	
+    SELECT EstadoDePago INTO elEstadoDepago FROM pago where idSolicitud = NEW.idSolicitud;
+    
+    IF elEstadoDePago = 'Por Pagar' AND new.tipoDocumento = 'Solicitado' THEN
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'ERROR, NO PUEDES INSERTAR EL DOCUMENTO SOLICITADO SI NO SE HA PAGADO';
+    END IF;
+
+END IF;
+END;
+$$ DELIMITER ; 
+
+
+DROP TRIGGER IF EXISTS checkRequestedDocIfHasAPaymentUPD;
+
+DELIMITER $$
+CREATE TRIGGER checkRequestedDocIfHasAPaymentUPD BEFORE UPDATE ON documento
+FOR EACH ROW
+BEGIN
+
+DECLARE elEstadoDePago ENUM('Pagado','Por Pagar');
+
+IF new.iDSolicitud IN (SELECT idSolicitud FROM pago) THEN
+	
+    SELECT EstadoDePago INTO elEstadoDepago FROM pago where idSolicitud = NEW.idSolicitud;
+    
+    IF elEstadoDePago = 'Por Pagar' AND new.tipoDocumento = 'Solicitado' THEN
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'ERROR, NO PUEDES INSERTAR EL DOCUMENTO SOLICITADO SI NO SE HA PAGADO';
+    END IF;
+
+END IF;
+END;
+$$ DELIMITER ; 
+
