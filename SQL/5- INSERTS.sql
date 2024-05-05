@@ -94,30 +94,31 @@ VALUES
  
 -- SOLICITUD:
 
-INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite,fechaInicio)
+INSERT INTO Solicitud (idUsuario, idFuncionario, idTramite, fechaInicio)
 VALUES 
-(6, 1, 17,'2024-04-30 12:00:00'),
-(22, 2, 17,'2024-04-30 12:00:00'),
-(3, 4, 3,'2024-04-30 12:00:00'),
-(6, 5, 4,'2024-04-30 12:00:00'),
-(2, 5, 5,'2024-04-30 12:00:00'),
-(6, 4, 17,'2024-04-30 12:00:00'),
-(7, 3, 17,'2024-04-30 12:00:00'),
-(6, 2, 8,'2024-04-30 12:00:00'),
-(16, 1, 16,'2024-04-30 12:00:00'),
-(13, 1, 10,'2024-04-30 12:00:00'),
-(14,4,16,'2024-04-30 12:00:00'),
-(12,5,6,'2024-04-30 12:00:00'),
-(10,3,2,'2024-04-30 12:00:00'),
-(9,2,16,'2024-04-30 12:00:00'),
-(4,5,2,'2024-04-30 12:00:00'),
-(18,5,12,'2024-04-30 12:00:00'),
-(19,3,2,'2024-04-30 12:00:00'),
-(4,5,10,'2024-04-30 12:00:00'),
-(12,2,17,'2024-04-30 12:00:00'),
-(18,2,1,'2024-04-30 12:00:00'),
-(18,5,14,'2024-04-30 12:00:00'),
-(12,3,16,'2024-04-30 12:00:00');
+(6, 1, 17, CURRENT_DATE()),
+(22, 2, 17, CURRENT_DATE()),
+(3, 4, 3, CURRENT_DATE()),
+(6, 5, 4, CURRENT_DATE()),
+(2, 5, 5, CURRENT_DATE()),
+(6, 4, 17, CURRENT_DATE()),
+(7, 3, 17, CURRENT_DATE()),
+(6, 2, 8, CURRENT_DATE()),
+(16, 1, 16, CURRENT_DATE()),
+(13, 1, 10, CURRENT_DATE()),
+(14, 4, 16, CURRENT_DATE()),
+(12, 5, 6, CURRENT_DATE()),
+(10, 3, 2, CURRENT_DATE()),
+(9, 2, 16, CURRENT_DATE()),
+(4, 5, 2, CURRENT_DATE()),
+(18, 5, 12, CURRENT_DATE()),
+(19, 3, 2, CURRENT_DATE()),
+(4, 5, 10, CURRENT_DATE()),
+(12, 2, 17, CURRENT_DATE()),
+(18, 2, 1, CURRENT_DATE()),
+(18, 5, 14, CURRENT_DATE()),
+(12, 3, 16, CURRENT_DATE());
+
 
 -- DESCOMENTAR PARA ACTUALIZAR LOS IDS IMPARES
 -- UPDATE solicitud set estado='enproceso' where idSolicitud%2!=0;
@@ -179,21 +180,22 @@ values(6,'ReciboDePago','recibo','recibo.pdf','activo'),
 
 INSERT INTO pago(idSolicitud, estadoDePago, fechaInicio, fechaLimite, fechaDeCancelacion, monto)
 VALUES
-    (4, 'Por Pagar', '2024-04-30', '2024-04-30', NULL, 1500),
-    (6, 'Por Pagar', '2024-04-30', '2024-04-30', '2024-04-30', 2000),
-    (8, 'Por Pagar', '2024-04-30', '2024-04-30', NULL, 2500),
-    (10, 'Por Pagar', '2024-04-30', '2024-04-30', NULL, 3000),
-    (12, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-01', 56000),
-    (14, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-02', 98500),
-    (16, 'Pagado', '2024-04-30', '2024-05-01', '2024-04-30', 105000),
-    (17, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-01', 105000),
-    (18, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-02', 105000),
-    (19, 'Pagado', '2024-04-30', '2024-05-02', '2024-05-01', 0),
-    (20, 'Pagado', '2024-04-30', '2024-04-30', '2024-04-30', 98530),
-    (21, 'Pagado', '2024-04-30', '2024-04-30', '2024-04-30', 105000),
-    (22, 'Pagado', '2024-04-30', '2024-05-01', '2024-04-30', 101201);
+    (4, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 1500),
+    (6, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE(), CURRENT_DATE(), 2000),
+    (8, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 2500),
+    (10, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 3000),
+    (12, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 2 DAY, CURRENT_DATE() + INTERVAL 1 DAY, 56000),
+    (14, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 2 DAY, CURRENT_DATE() + INTERVAL 2 DAY, 98500),
+    (16, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 1 DAY, CURRENT_DATE(), 105000),
+    (17, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 2 DAY, CURRENT_DATE() + INTERVAL 1 DAY, 105000),
+    (18, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 2 DAY, CURRENT_DATE() + INTERVAL 2 DAY, 105000),
+    (19, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 2 DAY, CURRENT_DATE() + INTERVAL 1 DAY, 0),
+    (20, 'Pagado', CURRENT_DATE(), CURRENT_DATE(), CURRENT_DATE(), 98530),
+    (21, 'Pagado', CURRENT_DATE(), CURRENT_DATE(), CURRENT_DATE(), 105000),
+    (22, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 1 DAY, CURRENT_DATE(), 101201);
 
-UPDATE pago SET fechaLimite='2024-05-02' WHERE idSolicitud IN(4,8,10);
+
+UPDATE pago SET fechaLimite=(CURRENT_DATE() + INTERVAL 3 DAY) WHERE idSolicitud IN(4,8,10);
 
 -- Completados:
 UPDATE solicitud set estado='completado' where idSolicitud IN(18,19,20,21);

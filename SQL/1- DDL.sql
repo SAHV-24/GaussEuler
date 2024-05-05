@@ -28,7 +28,7 @@ CREATE TABLE Tramite (
             FOREIGN KEY(idUnidad) REFERENCES unidad(idunidad))
             ;
 
-ALTER TABLE Tramite ADD CONSTRAINT revisarCOsto CHECK (costo>=0);    
+ALTER TABLE Tramite ADD CONSTRAINT revisarCosto CHECK (costo>=0);    
 -- Normativa
 CREATE TABLE Normativa (
 			idNormativa int NOT NULL AUTO_INCREMENT,
