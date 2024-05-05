@@ -63,7 +63,7 @@ CREATE TABLE Solicitud (
 			idUsuario INT NOT NULL,
 			idFuncionario INT NOT NULL,
 			idTramite INT NOT NULL,
-			estado ENUM('pendiente','en proceso','completado','cerrado','cancelado') NOT NULL DEFAULT 'PENDIENTE',
+			estado ENUM('pendiente','enProceso','completado','cerrado','cancelado') NOT NULL DEFAULT 'PENDIENTE',
 			fechaInicio DATETIME NOT NULL DEFAULT NOW(),
 			
 			PRIMARY KEY(idSolicitud),
@@ -73,7 +73,7 @@ CREATE TABLE Solicitud (
 			);
 
 ALTER TABLE solicitud ADD CONSTRAINT revisarEstados 
-CHECK (ESTADO='pendiente' or estado='en proceso'or estado='completado'or estado='cerrado'or estado='cancelado');
+CHECK (ESTADO='pendiente' or estado='enproceso'or estado='completado'or estado='cerrado'or estado='cancelado');
 -- Documento:
 CREATE TABLE Documento (
 			idDocumento INT NOT NULL AUTO_INCREMENT,

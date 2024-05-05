@@ -120,9 +120,9 @@ VALUES
 (12,3,16,'2024-04-30 12:00:00');
 
 -- DESCOMENTAR PARA ACTUALIZAR LOS IDS IMPARES
--- UPDATE solicitud set estado='en proceso' where idSolicitud%2!=0;
-UPDATE solicitud set estado='en proceso' where (idSolicitud%2)=0;
-UPDATE solicitud SET estado='en proceso' WHERE idUsuario IN(18,19,4,12);
+-- UPDATE solicitud set estado='enproceso' where idSolicitud%2!=0;
+UPDATE solicitud set estado='enproceso' where (idSolicitud%2)=0;
+UPDATE solicitud SET estado='enproceso' WHERE idUsuario IN(18,19,4,12);
 
 
 -- COMENTARIO

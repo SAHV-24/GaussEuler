@@ -14,7 +14,7 @@ BEGIN
  
 	IF new.idSolicitud NOT IN (SELECT idSolicitud FROM comentario) 
     AND getEstadoSolicitud(NEW.idSolicitud) = 'pendiente' THEN
-		UPDATE solicitud SET estado = 'en proceso' WHERE idSolicitud=NEW.idSolicitud;
+		UPDATE solicitud SET estado = 'enproceso' WHERE idSolicitud=NEW.idSolicitud;
 	END IF;
     
     IF new.IdUsuario NOT IN (
@@ -38,7 +38,7 @@ DELIMITER //
 CREATE TRIGGER verificarPagos after INSERT ON pago
 FOR EACH ROW 
 BEGIN
-	IF getEstadoSolicitud(new.idSolicitud) != 'en proceso' THEN 
+	IF getEstadoSolicitud(new.idSolicitud) != 'enproceso' THEN 
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No puedes ingresar un pago a una solicitud que no está en proceso!';
 	END IF;
     IF NEW.fechaInicio<(SELECT DATE(fechaInicio) FROM solicitud WHERE idSolicitud = new.idSolicitud) THEN
@@ -191,7 +191,7 @@ FOR EACH ROW
 		SET id = OLD.idSolicitud;
 
 		IF OLD.tipoDocumento = 'Solicitado' and OLD.estadoDocumento = 'activo' THEN
-			UPDATE solicitud SET estado = 'en proceso' WHERE idSolicitud = id;
+			UPDATE solicitud SET estado = 'enproceso' WHERE idSolicitud = id;
 		END IF;
 	END //
 DELIMITER ; 
@@ -385,7 +385,7 @@ BEGIN
 	DECLARE id INT;
 	SET id = OLD.idSolicitud;
     
-	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='en proceso' THEN
+	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='enproceso' THEN
 		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud = id;
         -- INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, "SISTEMA", NOW());
         
