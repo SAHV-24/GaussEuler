@@ -122,7 +122,7 @@ VALUES
 
 -- DESCOMENTAR PARA ACTUALIZAR LOS IDS IMPARES
 -- UPDATE solicitud set estado='enproceso' where idSolicitud%2!=0;
-UPDATE solicitud set estado='enproceso' where (idSolicitud%2)=0;
+UPDATE solicitud set estado='enproceso' where idSolicitud IN(2,4,6,8,10,12,14,16,18,20,22);
 UPDATE solicitud SET estado='enproceso' WHERE idUsuario IN(18,19,4,12);
 
 
