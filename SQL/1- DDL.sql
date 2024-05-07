@@ -49,7 +49,7 @@ CREATE TABLE Usuario 	(
 			apellido VARCHAR(100) NOT NULL,
 			correoElectronico VARCHAR(200) NOT NULL,
 			telefono BIGINT NOT NULL,
-            sexo ENUM('H','M','O') NOT NULL,
+            sexo ENUM('H','M') NOT NULL,
 			
 			PRIMARY KEY(idUsuario),
 			UNIQUE(identificacion,tipo)
