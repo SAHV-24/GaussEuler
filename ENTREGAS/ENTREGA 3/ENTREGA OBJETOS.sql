@@ -35,13 +35,15 @@ END
 // DELIMITER ; 
 
 -- INICIO PRUEBA --
--- Para realizar esta prueba, se debe contar con una solicitud de id 3, realizado por un usuario de id 3, la cual ya haya tenido el comentario origen (como se dispone en los inserts) con el atributo comentarioAnterior null.
+-- Para realizar esta prueba, se debe contar con una solicitud de id 3, realizado por un usuario de id 3, la cual ya haya tenido el comentario origen (como se dispone en los inserts)
+-- con el atributo comentarioAnterior null.
 -- Se pone idComentario como 10000 para que no entre en conflicto con otros comentarios que se agregan al ejecutar el archivo inserts.
 
 INSERT INTO comentario (idComentario,idSolicitud,idUsuario,mensaje,comentarioAnterior)
 VALUES (10000, 3, 3, 'Hola joven, que bella está.', NULL);
 
--- FIN PRUEBA --
+
+-- FIN PRUEBA 
 -- Fin trigger --
 
 
@@ -63,9 +65,8 @@ END
 
 -- INICIO PRUEBA --
 -- Para realizar esta prueba, se debe contar con un recibo de pago para la solicitud de id 8 que ya haya sido creada (como en el archivo inserts).
-
 INSERT INTO pago(idSolicitud, estadoDePago, fechaInicio, fechaLimite, fechaDeCancelacion, monto)
-VALUES (8, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 8 DAY, NULL, 10500);
+VALUES (8, 'PorPagar', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 8 DAY, NULL, 10500);
 
 -- FIN PRUEBA --
 -- Fin trigger --
@@ -148,6 +149,8 @@ INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (5, 'USUARIO', CURRENT
 	 SELECT fechaLimite FROM pago where idSolicitud=4;
 	 SELECT verificarFecha (4);
         
+     -- FIN PRUEBA   
+        
         
         -- FUNCIÓN 2 QUE SE SE USA EN LOS TRIGGERS!
 		-- FUNCIÓN para obtener el ESTADO de la Solicitud
@@ -168,27 +171,62 @@ INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (5, 'USUARIO', CURRENT
 
 
 		-- TRIGGER 1
+        
 		-- TRIGGER QUE SIRVEN SÓLO PARA CANCELAR UN PEDIDO DE UN PAGO!
+	
+					
 		DROP TRIGGER IF EXISTS verificarPagos;
 
 		DELIMITER //
-        
 		CREATE TRIGGER verificarPagos after INSERT ON pago
 		FOR EACH ROW 
 		BEGIN
-        
-			IF getEstadoSolicitud(new.idSolicitud) != 'enproceso' THEN -- AQUI USAMOS LA FUNCIÓN
+			IF getEstadoSolicitud(new.idSolicitud) != 'enproceso' THEN 
 				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No puedes ingresar un pago a una solicitud que no está en proceso!';
 			END IF;
 			IF NEW.fechaInicio<(SELECT DATE(fechaInicio) FROM solicitud WHERE idSolicitud = new.idSolicitud) THEN
 				SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha De inicio de la solicitud no coincide con la del pago';
 			END IF;
-            
 		END
 		// DELIMITER ;
 
+            
+		-- TRIGGER 2;
+			-- TRIGGER QUE CUANDO SE INGRESE UN COMENTARIO SE CAMBIE EL ESTADO A 'En proceso' y 
+-- Verifica que el usuario sea de esta solicitud Y VERIFICA QUE LOS USUARIOS SEAN DE LA MISMA SOLICITUD!
+			DROP TRIGGER IF EXISTS Comentario_en_proceso;
+            
+			DELIMITER || 
+			CREATE TRIGGER Comentario_en_proceso BEFORE INSERT ON comentario
+			FOR EACH ROW
+
+			BEGIN
+			 
+			 
+				-- verificar el estado
+				IF new.idSolicitud NOT IN (SELECT idSolicitud FROM comentario) 
+				AND getEstadoSolicitud(NEW.idSolicitud) = 'pendiente' THEN
+					UPDATE solicitud SET estado = 'enproceso' WHERE idSolicitud=NEW.idSolicitud;
+				END IF;
+				
+				-- verificar los usuarios del comentario insertado
+				IF new.IdUsuario NOT IN (
+					SELECT idUsuario FROM solicitud where idSolicitud = NEW.idSolicitud
+					UNION 
+					SELECT idFuncionario FROM solicitud WHERE idSolicitud = NEW.idSolicitud    
+				) THEN
+				
+					SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT ='Verificar el Usuario, este no pertenece a la solicitud';
+				
+				end if;
+				
+			END
+			|| DELIMITER ; 
+            
+
 
 		-- TRIGGER 2
+        
 		-- TRIGGER QUE NO PERMITE ACTUALIZAR EL ESTADO DE UN PAGO SI NO EXISTE UN RECIBO DE PAGO ACTIVO
 		DROP TRIGGER IF EXISTS verificarRecibosActivosEnPagoUPDATE;
 
@@ -218,6 +256,7 @@ INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (5, 'USUARIO', CURRENT
 		$$ DELIMITER ; 
 
 		-- TRIGGER 3
+        
 		-- Trigger que primero hace que se inserte la fecha de cancelación 
         -- antes de cambiar el estado del pago
 		DROP TRIGGER IF EXISTS verificarEstadoPagoUPDATE;
@@ -238,6 +277,7 @@ INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (5, 'USUARIO', CURRENT
 
 
 		-- TRIGGER 4
+        
         -- Sirve para cambiar el estado de la solicitud a cancelado cuando esta ya ha pasado de su fecha límite
 		DROP TRIGGER IF EXISTS update_estado_limite_fecha;
 
@@ -305,9 +345,7 @@ INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (5, 'USUARIO', CURRENT
 						SIGNAL SQLSTATE '45000' 
 						SET MESSAGE_TEXT='ERROR, YA EXISTE UN RECIBO DE PAGO ACTIVO, DEBE DESACTIVARLO ANTES DE INSERTAR UN RECIBO DE PAGO';
 				END IF;
-		END //
-
-		DELIMITER ;
+		END //		DELIMITER ;
 
 -- Proceso para CANCELACIONES y auditoría de cancelaciones usando la función y los triggers!,
 -- lo que vamos a hacer es agregar un pago que tenga una fecha antigua de un pago QUE NO FUE CANCELADO. 
@@ -316,7 +354,7 @@ INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (5, 'USUARIO', CURRENT
 -- OJO!
 DELETE FROM pago where idPago=3;
 
--- No me va a servir por el trigger 1
+-- No me va a servir por el trigger 1 (verificarPagos la cuál verifica la fechaDeInicio)
 INSERT INTO pago VALUES(3,8,'PorPagar','2024-04-03','2024-04-27',NULL,15000);
 
 -- Esa fecha es:
@@ -331,6 +369,12 @@ INSERT INTO pago VALUES(3,8,'PorPagar','2024-04-03','2024-04-27',NULL,15000);
 
 -- Muestra del trigger 2 para que sólo se cambie el estado de pago si hay un recibo de pago activo!
 update pago set estadoDePago = 'pagado' where idPago=3;
+
+-- Segunda muestra del trigger 2 (Verificar comentarios):
+	-- Miremos quienes están en esta solicitud
+	SELECT DISTINCT(idUsuario) FROM comentario where idSOlicitud=3;
+-- No puedo agregar un comentario de otra persona que no sea de la solicitud
+	INSERT INTO COMENTARIO VALUES(NULL,3,20,1,'esta es una prueba',NULL);
 
 -- Inserto el recibo de pago ACTIVO
 INSERT into documento(idDocumento,idSolicitud,tipoDocumento,tituloDocumento,linkDocumento,estadoDocumento) 
@@ -359,8 +403,6 @@ SELECT idSolicitud, estado FROM solicitud where idSolicitud=8;
 
 -- Veamos qué hay en cancelación:
 select * from cancelacion;
-
-
 
 
 
@@ -596,9 +638,7 @@ CALL generarReciboDePago(1);
 
 
 
-
 -- /////////////////////////////    VIEWS    /////////////////////////////
-
 
 
 

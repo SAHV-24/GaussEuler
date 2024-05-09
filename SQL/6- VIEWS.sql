@@ -8,19 +8,8 @@ p.fechaInicio, p.fechaLimite, p.fechaLimite-current_date() as
 'Días restantes'
 FROM solicitud s
 JOIN PAGO P USING (idSolicitud)
-WHERE p.estadoDePago='Por Pagar'
+WHERE p.estadoDePago='PorPagar'
 AND p.fechaLimite-current_date()BETWEEN 0 AND 3;
-
--- Vista de Solicitudes por Funcionario
-
-DROP VIEW IF EXISTS solicitudesPorFUncionario;
-
-CREATE VIEW SolicitudesPorFuncionario AS
-	SELECT s.idFuncionario, u.nombre, u.apellido,
-	CONCAT(CAST(COUNT(s.idFuncionario) AS CHAR), " solicitudes") AS Gestiona
-	FROM solicitud AS s INNER JOIN usuario AS u 
-    ON s.idFuncionario = u.idUsuario 
-    GROUP BY s.idFuncionario;
 
 -- Solicitudes por tipo de Usuario:
 

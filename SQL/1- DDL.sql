@@ -93,7 +93,7 @@ CREATE TABLE Documento (
 CREATE TABLE Pago (
 			idPago INT NOT NULL AUTO_INCREMENT,
 			idSolicitud INT NOT NULL,
-			estadoDePago ENUM('Pagado','Por Pagar') NOT NULL,
+			estadoDePago ENUM('Pagado','PorPagar') NOT NULL,
 			fechaInicio DATE NOT NULL,
 			fechaLimite DATE NOT NULL,
 			fechaDeCancelacion DATE NULL,

@@ -180,10 +180,10 @@ values(6,'ReciboDePago','recibo','recibo.pdf','activo'),
 
 INSERT INTO pago(idSolicitud, estadoDePago, fechaInicio, fechaLimite, fechaDeCancelacion, monto)
 VALUES
-    (4, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 1500),
-    (6, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE(), CURRENT_DATE(), 2000),
-    (8, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 2500),
-    (10, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 3000),
+    (4, 'PorPagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 1500),
+    (6, 'PorPagar', CURRENT_DATE(), CURRENT_DATE(), CURRENT_DATE(), 2000),
+    (8, 'PorPagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 2500),
+    (10, 'PorPagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 3000),
     (12, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 2 DAY, CURRENT_DATE() + INTERVAL 1 DAY, 56000),
     (14, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 2 DAY, CURRENT_DATE() + INTERVAL 2 DAY, 98500),
     (16, 'Pagado', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 1 DAY, CURRENT_DATE(), 105000),

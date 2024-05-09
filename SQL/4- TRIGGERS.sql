@@ -4,7 +4,8 @@
 
 
 
--- TRIGGER QUE CUANDO SE INGRESE UN COMENTARIO SE CAMBIE EL ESTADO A 'En proceso' y Verifica que el usuario sea de esta solicitud
+-- TRIGGER QUE CUANDO SE INGRESE UN COMENTARIO SE CAMBIE EL ESTADO A 'En proceso' y 
+-- Verifica que el usuario sea de esta solicitud
 DROP TRIGGER IF EXISTS Comentario_en_proceso;
 DELIMITER || 
 CREATE TRIGGER Comentario_en_proceso BEFORE INSERT ON comentario
@@ -387,7 +388,6 @@ BEGIN
     
 	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='enproceso' THEN
 		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud = id;
-        -- INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, "SISTEMA", NOW());
         
     END IF;
 END // 
@@ -469,10 +469,15 @@ CREATE TRIGGER UPDATEverificarFechaDeCancelacion BEFORE UPDATE ON PAGO
 FOR EACH ROW
 BEGIN
 
-IF NEW.fechaDeCancelacion > NEW.fechaLimite OR
-	NEW.fechaDeCancelacion < NEW.fechainicio THEN
-    
+IF NEW.fechaDeCancelacion > NEW.fechaLimite
+	AND verificarFecha(NEW.idSolicitud)=FALSE
+	OR
+	NEW.fechaDeCancelacion < NEW.fechainicio
+    AND verificarFecha(NEW.idSolicitud)=FALSE
+    THEN
+	    
     SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: La fecha de cancelación no coincide con las Fechas de Inicio o De Límite!';
+
 END IF;
 
 END;
@@ -512,7 +517,7 @@ BEGIN
 							no puede modificarse la fecha de Cancelación!';
 	END IF;
     
-    IF  NEW.fechaLimite < NEW.fechaDeCancelacion AND NEW.fechaDeCancelacion IS NOT NULL
+    IF  NEW.fechaLimite < NEW.fechaDeCancelacion AND NEW.fechaDeCancelacion IS NOT NULL AND verificarFecha(NEW.idSolicitud) = FALSE
     THEN
     
 		SIGNAL SQLSTATE '45000' 
@@ -734,13 +739,13 @@ CREATE TRIGGER checkRequestedDocIfHasAPaymentINS BEFORE INSERT ON documento
 FOR EACH ROW
 BEGIN
 
-DECLARE elEstadoDePago ENUM('Pagado','Por Pagar');
+DECLARE elEstadoDePago ENUM('Pagado','PorPagar');
 
 IF new.iDSolicitud IN (SELECT idSolicitud FROM pago) THEN
 	
     SELECT EstadoDePago INTO elEstadoDepago FROM pago where idSolicitud = NEW.idSolicitud;
     
-    IF elEstadoDePago = 'Por Pagar' AND new.tipoDocumento = 'Solicitado' THEN
+    IF elEstadoDePago = 'PorPagar' AND new.tipoDocumento = 'Solicitado' THEN
 		SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'ERROR, NO PUEDES INSERTAR EL DOCUMENTO SOLICITADO SI NO SE HA PAGADO';
     END IF;
@@ -757,13 +762,13 @@ CREATE TRIGGER checkRequestedDocIfHasAPaymentUPD BEFORE UPDATE ON documento
 FOR EACH ROW
 BEGIN
 
-DECLARE elEstadoDePago ENUM('Pagado','Por Pagar');
+DECLARE elEstadoDePago ENUM('Pagado','PorPagar');
 
 IF new.iDSolicitud IN (SELECT idSolicitud FROM pago) THEN
 	
     SELECT EstadoDePago INTO elEstadoDepago FROM pago where idSolicitud = NEW.idSolicitud;
     
-    IF elEstadoDePago = 'Por Pagar' AND new.tipoDocumento = 'Solicitado' THEN
+    IF elEstadoDePago = 'PorPagar' AND new.tipoDocumento = 'Solicitado' THEN
 		SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'ERROR, NO PUEDES INSERTAR EL DOCUMENTO SOLICITADO SI NO SE HA PAGADO';
     END IF;
