@@ -1,7 +1,113 @@
 -- /////////////////////////////    TRIGGERS PARA ASEGURAR LAS RELACIONES EN LA BASE DE DATOS   /////////////////////////////
 
 
+-- Disclaimer --
+-- Para probar estos triggers, es necesario que ya haya ejecutado el archivo de inserts dispuesto,
+-- 		debido a que el caso de prueba fallaría si se dispusiera de otros registros específicos para 
+-- 		realizar una prueba en concreto.
 
+
+-- Inicio trigger --
+
+-- 	Trigger para asegurar de que solo exista un comentario raíz por solicitud, por lo que
+-- 		los demás comentarios en una solicitud específica deben realizarse como respuesta a otro,
+-- 		más no pueden quedar como que no tuvieran un comentario anterior
+
+DROP TRIGGER IF EXISTS relacionReflexivaComentario ;
+
+DELIMITER // 
+
+CREATE TRIGGER relacionReflexivaComentario BEFORE INSERT ON COMENTARIO
+FOR EACH ROW
+
+BEGIN
+	DECLARE cantComentarioPrincipal INT;
+    
+    SELECT COUNT(*) INTO cantComentarioPrincipal
+    FROM comentario WHERE idSolicitud= NEW.idSolicitud and comentarioAnterior IS NULL;
+    
+    IF cantComentarioPrincipal = 1 AND NEW.comentarioAnterior IS NULL THEN
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Este comentario debe referenciar a otro, puesto que ya existe el comentario de origen';
+	END IF;
+END
+
+// DELIMITER ; 
+
+-- INICIO PRUEBA --
+-- Para realizar esta prueba, se debe contar con una solicitud de id 3, realizado por un usuario de id 3, la cual ya haya tenido el comentario origen (como se dispone en los inserts) con el atributo comentarioAnterior null.
+-- Se pone idComentario como 10000 para que no entre en conflicto con otros comentarios que se agregan al ejecutar el archivo inserts.
+
+INSERT INTO comentario (idComentario,idSolicitud,idUsuario,mensaje,comentarioAnterior)
+VALUES (10000, 3, 3, 'Hola joven, que bella está.', NULL);
+
+-- FIN PRUEBA --
+-- Fin trigger --
+
+
+-- Inicio trigger --
+
+-- Trigger para reforzar la relación 1:1 entre pago y solicitud
+
+DROP TRIGGER IF EXISTS relacionUnoAUnoPagoINS;
+
+DELIMITER // 
+CREATE TRIGGER relacionUnoAUnoPagoINS BEFORE INSERT ON pago
+FOR EACH ROW
+BEGIN
+	IF NEW.idSolicitud IN (SELECT idSolicitud FROM pago) THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ya existe un pago para esta solicitud. Actualicelo o eliminelo y cree un nuevo registro';
+	END IF;
+END
+// DELIMITER ; 
+
+-- INICIO PRUEBA --
+-- Para realizar esta prueba, se debe contar con un recibo de pago para la solicitud de id 8 que ya haya sido creada (como en el archivo inserts).
+
+INSERT INTO pago(idSolicitud, estadoDePago, fechaInicio, fechaLimite, fechaDeCancelacion, monto)
+VALUES (8, 'Por Pagar', CURRENT_DATE(), CURRENT_DATE() + INTERVAL 8 DAY, NULL, 10500);
+
+-- FIN PRUEBA --
+-- Fin trigger --
+
+-- Inicio trigger --
+-- Trigger para reforzar relación 1:1 entre cancelacion y solicitud (solo se puede cancelar una solicitud una sola vez)
+
+DROP TRIGGER IF EXISTS one2oneSolicitudxCancelacion;
+
+DELIMITER //
+CREATE TRIGGER one2oneSolicitudxCancelacion BEFORE INSERT ON cancelacion
+FOR EACH ROW
+
+BEGIN
+	DECLARE id INT;
+    SET id = (NEW.idSolicitud);
+    
+    IF id IN (SELECT idSolicitud FROM cancelacion) THEN
+    
+		SIGNAL 	
+			SQLSTATE '45000' 
+            SET MESSAGE_TEXT = "Esta solicitud ya fue cancelada";
+    
+    END IF;   
+    
+    
+END //
+DELIMITER ;
+
+-- INICIO PRUEBA --
+
+-- Nota: no hay registros en el archivo inserts que correspondan a la tabla 'cancelacion'
+
+-- Actualizamos el estado de una solicitud a 'cancelado'
+UPDATE solicitud set estado = 'cancelado' where idSolicitud = 5;
+
+-- El trigger 'update_estado_limite_fecha' se encarga de agregar la solicitud al registro de solicitudes canceladas de la tabla 'cancelacion'
+-- Intentamos cancelarla de nuevo
+INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (5, 'USUARIO', CURRENT_DATE());
+
+-- FIN PRUEBA --
+-- Fin trigger --
 
 
 -- /////////////////////////////    PROCESO DE CANCELACIÓN    /////////////////////////////
