@@ -792,5 +792,64 @@ END IF;
 END;
 $$ DELIMITER ; 
 
+
+DROP TRIGGER IF EXISTS revisarPagos;
+DELIMITER // 
+CREATE TRIGGER revisarPagos BEFORE UPDATE ON solicitud
+FOR EACH ROW
+BEGIN 
+
+DECLARE elEstado VARCHAR(50);
+
+IF NEW.idSolicitud IN (SELECT DISTINCT(idSolicitud) FROM pago) THEN
+      
+    SELECT estadoDePago INTO elEstado
+		FROM pago where idSolicitud = NEW.idSolicitud;
+        
+	IF elEstado ='PorPagar' AND new.Estado = 'completado' THEN 
+    SIGNAL SQLSTATE '45000' 
+    SET MESSAGE_TEXT = 'No puedes actualizar la solicitud a completado si tiene un pago pendiente que no ha sido pagado!';
+    END IF;
+    
+END IF;
+END;
+
+// DELIMITER ;
+
+DROP TRIGGER  IF EXISTS verificarSiEstaCancelado;
+DELIMITER //
+CREATE TRIGGER verificarSiEstaCancelado AFTER INSERT ON CANCELACION
+FOR EACH ROW
+BEGIN 
+
+	DECLARE elEstado VARCHAR(50);
+    
+    SELECT estado INTO elEstado
+    FROM solicitud where idSolicitud = new.idSolicitud;
+    
+    IF elEstado != 'cancelado' THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La solicitud no se ha cancelado!, primero debe ser cancelada!';
+	END IF;
+
+END
+// DELIMITER ; 
+
+
+
+DROP TRIGGER IF EXISTS integridadCancelaciones;
+DELIMITER $$
+CREATE TRIGGER integridadCancelaciones BEFORE UPDATE ON SOLICITUD
+FOR EACH ROW
+BEGIN
+
+DECLARE laCancelacion INT;
+
+IF new.Estado !='cancelado' AND new.Estado != 'cerrado' AND OLD.estado = 'cancelado' THEN
 	
+    DELETE FROM cancelacion WHERE idSolicitud = NEW.idSolicitud;
+
+END IF;
+
+END
+$$ DELIMITER ; 
 
