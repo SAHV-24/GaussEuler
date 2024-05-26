@@ -50,6 +50,24 @@ END
 
 -- Triggers en solicitud
 
+-- TRIGGER DE PAGO:
+DROP TRIGGER IF EXISTS checkEstadoCerradoPAGO;
+DELIMITER // 
+CREATE TRIGGER checkEstadoCerradoPAGO BEFORE INSERT ON PAGO 
+FOR EACH ROW
+BEGIN
+
+	DECLARE elEstado VARCHAR(50);
+	SELECT estado INTO elEstado
+	FROM solicitud WHERE idsolicitud = new.idSolicitud;
+    
+    IF elEstado = 'cerrado' THEN 
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Esta solicitud está CERRADA, por lo tanto no puede insertarse más datos.';
+	END IF;   
+
+END;
+// DELIMITER ;
+
 -- TRIGGERS QUE HACE QUE EXISTA LA RELACIÓN 1 A 1 EN LA TABLA USUARIO Y PAGO
 
 
@@ -853,3 +871,21 @@ END IF;
 END
 $$ DELIMITER ; 
 
+
+
+DROP TRIGGER IF EXISTS checkEstadoCerradoDOC;
+DELIMITER // 
+CREATE TRIGGER checkEstadoCerradoDOC BEFORE INSERT ON DOCUMENTO 
+FOR EACH ROW
+BEGIN
+
+	DECLARE elEstado VARCHAR(50);
+	SELECT estado INTO elEstado
+	FROM solicitud WHERE idsolicitud = new.idSolicitud;
+    
+    IF elEstado = 'cerrado' THEN 
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Esta solicitud está CERRADA, por lo tanto no puede insertarse más datos.';
+	END IF;   
+
+END;
+// DELIMITER ;
