@@ -178,7 +178,7 @@ values(6,'ReciboDePago','recibo','recibo.pdf','activo'),
 
 -- PAGO:
 
-INSERT INTO pago(idSolicitud, estadoDePago, fechaInicio, fechaLimite, fechaDeCancelacion, monto)
+INSERT INTO pago(idSolicitud, estadoDePago, fechaInicio, fechaLimite, saldadoEl, monto)
 VALUES
     (4, 'PorPagar', CURRENT_DATE(), CURRENT_DATE(), NULL, 1500),
     (6, 'PorPagar', CURRENT_DATE(), CURRENT_DATE(), CURRENT_DATE(), 2000),

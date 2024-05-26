@@ -93,10 +93,10 @@ CREATE TABLE Documento (
 CREATE TABLE Pago (
 			idPago INT NOT NULL AUTO_INCREMENT,
 			idSolicitud INT NOT NULL,
-			estadoDePago ENUM('Pagado','PorPagar') NOT NULL,
+			estadoDePago ENUM('Pagado','PorPagar') NOT NULL DEFAULT 'porPagar',
 			fechaInicio DATE NOT NULL,
 			fechaLimite DATE NOT NULL,
-			fechaDeCancelacion DATE NULL,
+			saldadoEl DATE NULL,
 			monto DECIMAL(12,2) NOT NULL,
 			
 			PRIMARY KEY(idPago),
@@ -105,8 +105,6 @@ CREATE TABLE Pago (
                         
 ALTER TABLE PAGO ADD CONSTRAINT revisarFechas CHECK (fechaInicio<=FechaLimite);   
 ALTER TABLE PAGO ADD CONSTRAINT revisarMonto CHECK (MONTO>=0);    
-
--- fechaDeCancelacion se maneja desde un trigger, no desde un constraint.
 
 -- Comentario:
 CREATE TABLE Comentario(

@@ -477,21 +477,21 @@ BEGIN
 // DELIMITER ;
 
 
-DROP TRIGGER IF EXISTS UPDATEverificarFechaDeCancelacion;
+DROP TRIGGER IF EXISTS UPDATEverificarsaldadoEl;
 
 DELIMITER //
-CREATE TRIGGER UPDATEverificarFechaDeCancelacion BEFORE UPDATE ON PAGO
+CREATE TRIGGER UPDATEverificarFechaDeSaldarPago BEFORE UPDATE ON PAGO
 FOR EACH ROW
 BEGIN
 
-IF NEW.fechaDeCancelacion > NEW.fechaLimite
+IF NEW.saldadoEl > NEW.fechaLimite
 	AND verificarFecha(NEW.idSolicitud)=FALSE
 	OR
-	NEW.fechaDeCancelacion < NEW.fechainicio
+	NEW.saldadoEl < NEW.fechainicio
     AND verificarFecha(NEW.idSolicitud)=FALSE
     THEN
 	    
-    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: La fecha de cancelación no coincide con las Fechas de Inicio o De Límite!';
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'ERROR: La fecha de haber pagado no coincide con las Fechas de Inicio o De Límite!';
 
 END IF;
 
@@ -501,14 +501,14 @@ END;
 
 
 -- TRIGGER PARA VERIFICAR LA FECHA DE CANCELACIÓN
-DROP TRIGGER IF EXISTS  verificarFechaDeCancelacion;
+DROP TRIGGER IF EXISTS  verificarFechaDeSaldarPago;
 
 DELIMITER //
-CREATE TRIGGER verificarFechaDeCancelacion BEFORE INSERT ON PAGO
+CREATE TRIGGER verificarFechaDeSaldarPago BEFORE INSERT ON PAGO
 FOR EACH ROW
 BEGIN
-	IF NEW.fechaDeCancelacion IS NOT NULL AND NEW.fechaDeCancelacion NOT BETWEEN NEW.fechaInicio AND NEW.fechaLimite THEN
-		SIGNAL sqlstate '45000' SET MESSAGE_TEXT = 'ERROR: La fecha de cancelación no coincide con las Fechas de Inicio o De Límite!';
+	IF NEW.saldadoEl IS NOT NULL AND NEW.saldadoEl NOT BETWEEN NEW.fechaInicio AND NEW.fechaLimite THEN
+		SIGNAL sqlstate '45000' SET MESSAGE_TEXT = 'ERROR: La fecha del pago no coincide con las Fechas de Inicio o De Límite!';
     END IF;
     
 END
@@ -524,19 +524,19 @@ FOR EACH ROW
 
 BEGIN
 
-	IF NEW.fechaLimite > OLD.fechaDeCancelacion AND OLD.fechaDeCancelacion IS NOT NULL
+	IF NEW.fechaLimite > OLD.saldadoEl AND OLD.saldadoEl IS NOT NULL
     AND OLD.estadoDePago = 'Pagado' AND NEW.estadoDePAGO='Pagado'
 	THEN
 		SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'ERROR: El pago ya está cancelado, 
-							no puede modificarse la fecha de Cancelación!';
+							no puede modificarse la fecha de haber saldado el pago!';
 	END IF;
     
-    IF  NEW.fechaLimite < NEW.fechaDeCancelacion AND NEW.fechaDeCancelacion IS NOT NULL AND verificarFecha(NEW.idSolicitud) = FALSE
+    IF  NEW.fechaLimite < NEW.saldadoEl AND NEW.saldadoEl IS NOT NULL AND verificarFecha(NEW.idSolicitud) = FALSE
     THEN
     
 		SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'ERROR: Verifique las fechas de Límite y las fechas de Cancelación por favor!';
+        SET MESSAGE_TEXT = 'ERROR: Verifique las fechas de Límite y las fechas de haber saldado el pago por favor!';
     
     END IF;       
 END
@@ -552,9 +552,9 @@ CREATE TRIGGER verificarFechaLimiteINSERT BEFORE INSERT ON pago
 FOR EACH ROW
 
 BEGIN
-	IF NEW.fechaLimite < NEW.fechaDeCancelacion AND NEW.fechaDeCancelacion IS NOT NULL THEN
+	IF NEW.fechaLimite < NEW.saldadoEl AND NEW.saldadoEl IS NOT NULL THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha Límite no puede ser Menor 
-													a la fecha De Cancelación!';
+													a la fecha de haber saldado el pago!';
 	END IF;       
 END
 
@@ -570,9 +570,9 @@ CREATE TRIGGER verificarEstadoPagoUPDATE AFTER UPDATE ON PAGO
 FOR EACH ROW
 
 BEGIN
-    IF NEW.estadoDePago = 'Pagado' AND NEW.fechaDeCancelacion IS NULL THEN 
+    IF NEW.estadoDePago = 'Pagado' AND NEW.saldadoEl IS NULL THEN 
 		SIGNAL sqlstate '45000' 
-        SET MESSAGE_TEXT = 'Antes de cambiar el estado del pago, debe agregarse la FECHA DE CANCELACIÓN!';
+        SET MESSAGE_TEXT = 'Antes de cambiar el estado del pago, debe la fecha de haber saldado el pago!';
 	END IF;
 END
 
@@ -588,9 +588,9 @@ CREATE TRIGGER verificarEstadoPagoINSERT BEFORE INSERT ON PAGO
 FOR EACH ROW
 
 BEGIN
-    IF NEW.estadoDePago = 'Pagado' AND NEW.fechaDeCancelacion IS NULL THEN 
+    IF NEW.estadoDePago = 'Pagado' AND NEW.saldadoEl IS NULL THEN 
 		SIGNAL sqlstate '45000' 
-        SET MESSAGE_TEXT = 'Antes de agregar este registro, debe agregarse la FECHA DE CANCELACIÓN!';
+        SET MESSAGE_TEXT = 'Antes de agregar este registro, debe agregarse la fecha en que se saldó el pago!';
 	END IF;
 END
 
