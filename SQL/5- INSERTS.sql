@@ -199,3 +199,10 @@ UPDATE pago SET fechaLimite=(CURRENT_DATE() + INTERVAL 3 DAY) WHERE idSolicitud 
 
 -- Completados:
 UPDATE solicitud set estado='completado' where idSolicitud IN(18,19,20,21);
+
+-- Pruebas
+INSERT INTO SOLICITUD (idsolicitud,idUsuario,idfuncionario,idtramite,fechaInicio,estado)
+VALUES(256,20,1,5,"2024-05-07","enProceso");
+
+INSERT INTO SOLICITUD (idsolicitud,idUsuario,idfuncionario,idtramite,fechaInicio,estado)
+VALUES(900,20,1,5,"2024-05-07","enProceso");

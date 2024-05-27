@@ -249,7 +249,7 @@ BEGIN
 	DECLARE laId INT;
 	SET laId = New.idSolicitud;
 	IF getEstadoSolicitud(laId)='cerrado' THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='ERROR, LA SOLICITUD ESTÁ CERRADA';
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='La solicitud está cerrada y no se pueden insertar más comentarios';
 	END IF;
 END // 
 DELIMITER ;
@@ -265,7 +265,7 @@ BEGIN
 	DECLARE laId INT;
 	SET laId = New.idSolicitud;
 	IF getEstadoSolicitud(laId)='cerrado' THEN
-		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='ERROR, LA SOLICITUD ESTÁ CERRADA';
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='La solicitud está cerrada y no se pueden actualizar más comentarios';
 	END IF;
 END // 
 DELIMITER ;
@@ -680,7 +680,8 @@ BEGIN
     
     IF cantComentarioPrincipal = 1 AND NEW.comentarioAnterior IS NULL THEN
 		SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Este comentario debe ser referenciado a otro puesto que ya existe el comentario de Origen';
+        SET MESSAGE_TEXT = 'Este comentario debe ser referenciado a otro puesto que ya existe el comentario raíz
+';
 	END IF;
 END
 
@@ -703,7 +704,7 @@ BEGIN
     
     IF cantComentarioPrincipal = 1 AND NEW.comentarioAnterior IS NULL THEN
 		SIGNAL SQLSTATE '45000' 
-        SET MESSAGE_TEXT = 'Este comentario debe ser referenciado a otro puesto que ya existe el comentario de Origen';
+        SET MESSAGE_TEXT = 'Este comentario debe ser referenciado a otro puesto que ya existe el comentario raíz';
 	END IF;
 END
 
@@ -723,11 +724,19 @@ BEGIN
     SELECT MAX(fechaYhora) INTO horaMaxima
     FROM comentario GROUP BY (new.idSolicitud);
     
-    IF new.fechaYhora < horaMaxima THEN 
+    IF new.fechaYhora < horaMaxima AND (SELECT COUNT(*) FROM COMENTARIO WHERE IDSOLICITUD = NEW.IDSOLICITUD) !=0
+		
+    THEN 
 		SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'ERROR: La hora de envío de este comentario no concuerda con la 
 										del último comentario de la solicitud!';
     END IF;
+    
+    IF DATE(new.fechaYHora)<(SELECT DATE(fechaInicio) FROM solicitud where idSolicitud = new.idSolicitud) THEN
+				SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'ERROR: La fecha del comentario no concuerda con el de la creación de la solicitud';
+	END IF;   
+    
     
 END
 // DELIMITER ; 
@@ -745,7 +754,9 @@ BEGIN
 	DECLARE horaMaxima DATETIME;
     
     SELECT MAX(fechaYhora) INTO horaMaxima
-    FROM comentario GROUP BY (new.idSolicitud);
+    FROM comentario GROUP BY (new.idSolicitud)
+    AND (SELECT COUNT(*) FROM COMENTARIO WHERE IDSOLICITUD = NEW.IDSOLICITUD) !=0
+    ;
     
     IF new.fechaYhora < horaMaxima 
     THEN 
@@ -988,25 +999,6 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha de inicio de la solicitud no coincide con la del pago';
     END IF;
 
-    -- Verifica si la fecha límite es anterior a la fecha actual
-    IF NEW.fechaLimite < current_date() AND getEstadoSolicitud(NEW.idSolicitud) = 'enproceso' THEN
-        SET NEW.estadoDePago = 'Vencido';
-        -- No podemos actualizar solicitud aquí porque es un BEFORE trigger.
-        -- En lugar de eso, haremos esta actualización en un AFTER INSERT trigger separado.
-    END IF;
-END //
-DELIMITER ;
-
-
-DROP TRIGGER IF EXISTS actualizarSolicitudEstado;
-
-DELIMITER //
-CREATE TRIGGER actualizarSolicitudEstado AFTER INSERT ON pago
-FOR EACH ROW 
-BEGIN
-    IF NEW.fechaLimite < current_date() AND getEstadoSolicitud(NEW.idSolicitud) = 'enproceso' THEN
-        UPDATE solicitud SET estado = 'cancelado' WHERE idSolicitud = NEW.idSolicitud;
-    END IF;
 END //
 DELIMITER ;
 
@@ -1033,3 +1025,23 @@ BEGIN
     END IF;
 END //
 DELIMITER ;
+
+DROP TRIGGER IF EXISTS verificarUpdatesFechaSolicitud;
+DELIMITER $$
+CREATE TRIGGER verificarUpdatesFechaSolicitud BEFORE UPDATE ON solicitud
+FOR EACH ROW
+BEGIN
+
+IF(new.fechaInicio!=OLD.fechaInicio) 
+AND (OLD.idSolicitud IN (SELECT DISTINCT(idSolicitud) FROM pago)
+OR OLD.idSolicitud IN(SELECT DISTINCT(idSolicitud) FROM documento) 
+OR OLD.idSolicitud IN(SELECT DISTINCT(idSolicitud) FROM comentario))
+THEN
+	
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede cambiar la fecha de inicio de la solicitud porque ya hay tablas comprometidas con esta solicitud';
+END IF;
+END
+$$ DELIMITER ; 
+
+
+

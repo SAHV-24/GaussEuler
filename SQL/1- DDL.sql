@@ -113,7 +113,7 @@ CREATE TABLE Comentario(
 			idUsuario INT NOT NULL,
 			comentarioAnterior INT NULL,
 			mensaje MEDIUMTEXT NOT NULL,
-			fechaYhora DATETIME NOT NULL DEFAULT NOW(),
+			fechaYhora DATETIME NULL DEFAULT NOW(),
 			
 			PRIMARY KEY(idComentario),
 			FOREIGN KEY(idSolicitud) REFERENCES solicitud(idSolicitud),
