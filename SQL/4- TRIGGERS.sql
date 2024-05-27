@@ -36,15 +36,23 @@ END
 DROP TRIGGER IF EXISTS verificarPagos;
 
 DELIMITER //
-CREATE TRIGGER verificarPagos after INSERT ON pago
+CREATE TRIGGER verificarPagos BEFORE INSERT ON pago
 FOR EACH ROW 
 BEGIN
-	IF getEstadoSolicitud(new.idSolicitud) != 'enproceso' THEN 
+
+	IF NOT (getEstadoSolicitud(new.idSolicitud) = 'enproceso') THEN 
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No puedes ingresar un pago a una solicitud que no está en proceso!';
 	END IF;
+    
     IF NEW.fechaInicio<(SELECT DATE(fechaInicio) FROM solicitud WHERE idSolicitud = new.idSolicitud) THEN
 		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha De inicio de la solicitud no coincide con la del pago';
 	END IF;
+    
+	IF NEW.fechaLimite<current_date() AND getEstadoSolicitud(new.idSolicitud)='enproceso' THEN
+		SET new.estadoDePago = 'Vencido';
+		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud = new.idSolicitud;
+    END IF;
+    
 END
 // DELIMITER ;
 
@@ -393,13 +401,11 @@ BEGIN
 	SET id = NEW.idSolicitud;
    
 	IF getEstadoSolicitud(id)='cancelado' AND verificarFecha(id)=0 THEN
-		
         INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, "USUARIO", NOW());
         
     END IF;
     
     IF getEstadoSolicitud(id)='cancelado' AND  verificarFecha(id)=1 THEN
-		
         INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, "SISTEMA", NOW());
         
     END IF;    
@@ -418,10 +424,10 @@ BEGIN
 
 	DECLARE id INT;
 	SET id = OLD.idSolicitud;
-    
+       
 	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='enproceso' THEN
+		SET new.estadoDePago = 'Vencido';
 		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud = id;
-        
     END IF;
 END // 
 DELIMITER ; 
@@ -495,7 +501,7 @@ BEGIN
 // DELIMITER ;
 
 
-DROP TRIGGER IF EXISTS UPDATEverificarsaldadoEl;
+DROP TRIGGER IF EXISTS UPDATEverificarFechaDeSaldarPago;
 
 DELIMITER //
 CREATE TRIGGER UPDATEverificarFechaDeSaldarPago BEFORE UPDATE ON PAGO
@@ -832,6 +838,8 @@ IF NEW.idSolicitud IN (SELECT DISTINCT(idSolicitud) FROM pago) THEN
 END IF;
 END;
 
+
+
 // DELIMITER ;
 
 DROP TRIGGER  IF EXISTS verificarSiEstaCancelado;
@@ -889,3 +897,139 @@ BEGIN
 
 END;
 // DELIMITER ;
+
+DROP TRIGGER if exists integridad_fk_pagos_UPD;
+DELIMITER //
+CREATE TRIGGER integridad_fk_pagos_UPD BEFORE UPDATE ON PAGO
+FOR EACH ROW
+BEGIN
+
+IF new.idSolicitud IN (SELECT DISTINCT(idsolicitud) FROM pago) AND 
+	new.idSolicitud != OLD.idsolicitud THEN 
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error!, no se puede cambiar la solicitud porque la nueva solicitud ya tiene un pago registrado';
+END IF;
+END;
+// DELIMITER ; 
+
+
+
+DROP TRIGGER IF EXISTS integridadFKsSolicitud;
+DELIMITER //
+CREATE TRIGGER integridadFKsSolicitud BEFORE UPDATE ON solicitud
+FOR EACH ROW
+BEGIN
+
+DECLARE ID INT;
+SET id = NEW.idSolicitud;
+-- Si ya existen registros en las tablas que dependen de solicitud...
+if id IN (SELECT DISTINCT(idsolicitud) from pago)
+	OR id IN (SELECT DISTINCT(idsolicitud) from DOCUMENTO)
+    OR id IN (SELECT DISTINCT(idsolicitud) from comentario) THEN
+    
+-- Y además de eso se ha cambiado el idDelUsuario o del funcionario o del trámite
+	IF NEW.idUsuario != OLD.idUsuario 
+		OR NEW.idTramite!= OLD.idTramite 
+        OR NEW.idFuncionario != OLD.idFuncionario THEN 
+		-- Lanzar una excepción!
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No se puede actualizar las llaves foraneas';
+
+	END IF;
+    
+END IF;
+END
+// DELIMITER ; 
+
+
+
+DROP TRIGGER IF EXISTS revisarPagoVencidoUPD ; 
+DELIMITER $$
+CREATE TRIGGER revisarPagoVencidoUPD BEFORE UPDATE ON PAGO
+FOR EACH ROW 
+BEGIN
+
+DECLARE id INT;
+	SET id = OLD.idSolicitud;
+
+if NEW.estadoDePago = 'vencido'  AND NOT (OLD.fechaLimite<current_date())AND getEstadoSolicitud(id)='enproceso' THEN
+	SIGNAL SQLSTATE '45000' SET MESSAGE_text = 'No es posible actualizar a VENCIDO si la fecha limite del pago aún no ha caducado ';
+END IF;
+END;
+$$ DELIMITER ;
+
+
+DROP TRIGGER IF EXISTS revisarPagoVencidoINS ; 
+DELIMITER $$
+CREATE TRIGGER revisarPagoVencidoINS BEFORE INSERT ON PAGO
+FOR EACH ROW 
+BEGIN
+
+DECLARE id INT;
+	SET id = NEW.idSolicitud;
+
+if NEW.estadoDePago = 'vencido'  AND NOT(NEW.fechaLimite<current_date()) AND getEstadoSolicitud(id)='enproceso' THEN
+	SIGNAL SQLSTATE '45000' SET MESSAGE_text = 'No es posible insertar un pago VENCIDO si la fecha limite del pago aún no ha caducado';
+END IF;
+END;
+$$ DELIMITER ;
+
+DROP TRIGGER IF EXISTS verificarPagos;
+
+DELIMITER //
+CREATE TRIGGER verificarPagos BEFORE INSERT ON pago
+FOR EACH ROW 
+BEGIN
+    -- Verifica que la solicitud esté en proceso
+    IF NOT (getEstadoSolicitud(NEW.idSolicitud) = 'enproceso') THEN 
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'No puedes ingresar un pago a una solicitud que no está en proceso!';
+    END IF;
+
+    -- Verifica que la fecha de inicio del pago sea mayor o igual a la fecha de inicio de la solicitud
+    IF NEW.fechaInicio < (SELECT DATE(fechaInicio) FROM solicitud WHERE idSolicitud = NEW.idSolicitud LIMIT 1) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha de inicio de la solicitud no coincide con la del pago';
+    END IF;
+
+    -- Verifica si la fecha límite es anterior a la fecha actual
+    IF NEW.fechaLimite < current_date() AND getEstadoSolicitud(NEW.idSolicitud) = 'enproceso' THEN
+        SET NEW.estadoDePago = 'Vencido';
+        -- No podemos actualizar solicitud aquí porque es un BEFORE trigger.
+        -- En lugar de eso, haremos esta actualización en un AFTER INSERT trigger separado.
+    END IF;
+END //
+DELIMITER ;
+
+
+DROP TRIGGER IF EXISTS actualizarSolicitudEstado;
+
+DELIMITER //
+CREATE TRIGGER actualizarSolicitudEstado AFTER INSERT ON pago
+FOR EACH ROW 
+BEGIN
+    IF NEW.fechaLimite < current_date() AND getEstadoSolicitud(NEW.idSolicitud) = 'enproceso' THEN
+        UPDATE solicitud SET estado = 'cancelado' WHERE idSolicitud = NEW.idSolicitud;
+    END IF;
+END //
+DELIMITER ;
+
+DROP TRIGGER IF EXISTS registrar_cancelacionxUsuario;
+
+DELIMITER //
+CREATE TRIGGER registrar_cancelacionxUsuario AFTER UPDATE ON solicitud
+FOR EACH ROW
+BEGIN
+    DECLARE id INT;
+    DECLARE elEstado VARCHAR(50);
+    DECLARE fechaVerificada BOOL;
+    SET id = NEW.idSolicitud;
+    
+    SET elEstado = getEstadoSolicitud(id);
+    SET fechaVerificada = verificarFecha(id);
+
+    IF elEstado = 'cancelado' THEN
+        IF fechaVerificada THEN
+            INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, 'SISTEMA', NOW());
+        ELSE
+            INSERT INTO cancelacion (idSolicitud, tipo, fecha) VALUES (id, 'USUARIO', NOW());
+        END IF;
+    END IF;
+END //
+DELIMITER ;
