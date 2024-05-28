@@ -425,7 +425,7 @@ BEGIN
 	DECLARE id INT;
 	SET id = OLD.idSolicitud;
        
-	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='enproceso' THEN
+	IF OLD.fechaLimite<current_date() AND getEstadoSolicitud(id)='enproceso' AND OLD.fechaLimite = NEW.fechaLimite THEN
 		SET new.estadoDePago = 'Vencido';
 		UPDATE solicitud SET estado='cancelado' WHERE idSolicitud = id;
     END IF;
@@ -1042,6 +1042,4 @@ THEN
 END IF;
 END
 $$ DELIMITER ; 
-
-
 
